@@ -15,3 +15,8 @@ function print_array($array)
 	 print_r($array);
 	echo "</pre>";
 }
+
+function display($content)
+{
+	
+}

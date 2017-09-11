@@ -6,9 +6,13 @@ body{
     background: #fff;
 }
 a{
-	text-decoration: none;
+	text-decoration: none !important;
 }
 
+#main-content{
+	margin-left:265px;
+	margin-top:43px;
+}
 .hrule{
 	width: 300px; 
 	border-top: 1px dashed black;
@@ -47,3 +51,14 @@ a{
 	font-weight: bold;
 	font-size: 20px;
 } 
+
+#box{
+	height: 65px;
+}
+#box2{
+	height: 65px;
+}
+
+#error-dialog{
+	width: 70%;
+}

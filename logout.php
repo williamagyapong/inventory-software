@@ -3,6 +3,7 @@
 
 $user = new User();
 if($user->logout()) {
+  Session::deleteAll();	
   Redirect::to('index.php');
 }
  

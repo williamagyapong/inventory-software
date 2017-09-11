@@ -10,26 +10,27 @@
   <link rel="icon" type="image/x-icon" href="images/logo2.png">
 	<title>Home page</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/w3.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <!-- <link rel="stylesheet" href="css/w3.css"> -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"> -->
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
 
 	<style type="text/css">
     body{
-      background: white;
-      min-height: 500px;
+      background-image: url(images/bgimg.jpg);
       background-repeat: no-repeat;
       background-size: 100%;
     }
   
-  .main{
-    background-image: url(images/loginbg.jpg);
-  }
-  .wrap{
-    min-height:450px;max-height:600px;
+  .wrapper{
+    /*position: absolute;*/
+    height:350px;
     margin-top: 150px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 5px;
 
   }
   .error{
@@ -41,20 +42,70 @@
     text-align: center;
     margin-top: 80PX;
   }
+  @media(max-width: 480px) {
+  .container{
+  margin: 10px auto;
+}
+}
+
+
+@media(min-width: 480px) {
+.container{
+  margin: -50px auto;
+}
+}
+
+
+@media(min-width: 1200px) {
+  .container{
+  margin: -10px auto;
+}
+}
+
+
+form{
+  font-size: 15px;
+  font-family: arial;
+}
+.center-logo{
+  text-align: center;
+  margin-bottom: 4px;
+  margin-left: 95px;
+}
+.first-letter{
+  font-family: verdana;
+  font-weight: bolder;
+  font-size: 18px;
+  color: #0000ff;
+}
+.app-name{
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.name_input{
+  height: 60px;
+  font-size:20px;
+}
+
+.glyphicon_ok{
+  margin-top: 10px;
+
+}
+
+.sumit_button{
+  height: 50px;
+  font-size: 17px;
+}
  
   </style>
 </head>
 <body>
 <!-- Top container -->
-<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-  <!-- <span class="w3-bar-item w3-center">BusinessRecords</span> -->
-  <span class="w3-bar-item w3-right"><img src="images/logo2.png" width="65" height="30"><span><?php echo Config::get('config/app/name'); ?></span></span>
-</div>
-<div class="container-fluid" >
-  <div class="row main">
-    <div class=" error w3-padding">
+<div class="container" >
+  <div class="row">
+    <div class="error w3-padding">
       
-      <!-- <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-topright w3-xxlarge">&times;</span> -->
      <?php
           // handle user login process
         if(Input::exist('login')) {
@@ -88,36 +139,35 @@
 
       ?>
     </div>
-   
-    <div class="wrap">
-
-   <form action="index.php" method="post" role="form">
-     <fieldset class="loginfieldset">
-    
-          <br><br><br>
-      <div class="form-group">
-         <input type="text" name="username" placeholder="username" class="form-control text_input" required="required" autocomplete="off">
-      </div>
-    
-      <div class="form-group">
-        <input type="password" name="password" placeholder="password" class="form-control text_input" required ="required">
-      </div>
-    
-
-      <div class="form-group">
-        <input type="submit" name="login" value="Login" class="form-control text_input submit-btn2">
-      </div>
-
-
-    </fieldset>
-  </form>
+    <div class="col-md-4 col-mdoffset-4 wrapper">
+      <img src="images/logo2.png" width="130" height="90" class="center-logo">
+      <div class="app-name"><span class="first-letter">N</span>apol's <span class="first-letter">M</span>aterial <span class="first-letter">I</span>nventory <span class="first-letter">S</span>oftware</div>
+      <form action="index.php" method="post" role="form">
+       <div class="form-group has-success has-feedback">
+          <label class="control-label sr-only" for="inputGroupSuccess4"></label>
+          <div class="input-group">
+             <span class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+            <input type="text" name= "username" class="form-control name_input" placeholder ="Username" id="inputGroupSuccess4" autocomplete="off">
+          </div>
+          <span class="glyphicon glyphicon form-control-feedback glyphicon_ok" aria-hidden="true"></span>
+          <span id="inputGroupSuccess4Status" class="sr-only">(success)</span>
+       </div>
+       <div class="form-group has-success has-feedback">
+          <label class="control-label sr-only" for="inputGroupSuccess4">Input group with success</label>
+          <div class="input-group">
+             <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+            <input type ="password" name = "password" class="form-control name_input" placeholder ="Password" id="inputGroupSuccess4" aria-describedby="inputGroupSuccess4Status">
+          </div>
+          <span class="glyphicon glyphicon form-control-feedback glyphicon_ok" aria-hidden="true"></span>
+          <span id="inputGroupSuccess4Status" class="sr-only">(success)</span>
+         </div>
+         <button type="submit" name="login" class="btn btn-primary btn-block sumit_button">Sign In</button>  
+     </form>
     </div>
-    
   </div>
- 
 </div>
 
-
+<script src="js/custom.js"></script>
 </body>
 </html>
 

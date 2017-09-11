@@ -17,6 +17,12 @@ class Redirect
 					 	include 'includes/errors/502.php';
 					 	exit();
 					break;
+
+					case 401:
+					 	header('HTTP/1.0 401 SYSTEM FAILURE');
+					 	include 'includes/errors/401.html';
+					 	exit();
+					break;
 				}
 			}
 

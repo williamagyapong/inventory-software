@@ -28,13 +28,18 @@ class Session
 		}
 	}
 
+
+	public static function deleteAll() {
+		session_destroy();
+	}
+
 /**
 *
 *
 *
 */
 	public static function flash($name, $string='') {
- 		if(self::exists($name)){
+ 		if(self::exist($name)){
  			$session = self::get($name);
  			self::delete($name);
  			
