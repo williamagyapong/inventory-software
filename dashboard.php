@@ -44,16 +44,16 @@
   </div>
   <!-- welcome the user --><br>
   <div id="welcome" class="w3-card-4 w3-padding w3-margin">welcome <?php echo $admin->name;?></div>
-  <hr>
+
   <div class="w3-container">
     <h5 class="w3-bold w3-xlarge" style="">General Statistics</h5>
     
     <div id="c-levels" class="w3-card-4 w3-padding">
-      <h3>Projects Completion Levels</h3>
+      <h3 class="w3-text-grey">Projects Completion Levels</h3>
       <canvas id="chart" width="250" height="110"></canvas>
     </div>
     <div id="classify" class="w3-card-4 w3-padding" style="margin-top: 25px;">
-      <h3>Project Classifications</h3>
+      <h3 class="w3-text-grey">Project Classifications</h3>
       <p>Non satisfactory Project Registration</p>
       <div class="w3-grey">
         <div class="w3-container w3-center w3-padding w3-green" style="width:25%">25%</div>
@@ -79,7 +79,7 @@
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-dark-grey">
     
-    <p>Powered by <a href="#" target="_blank"><?php echo Config::get('client/name');?></a></p>
+    <p>Powered by <a href="#" target="_blank"><?php echo Config::get('developer/name');?></a></p>
   </footer>
 
   <!-- End page content -->
@@ -92,28 +92,7 @@
 <script type="text/javascript" src="js/chartconfig.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script>
-// Get the Sidebar
-var mySidebar = document.getElementById("mySidebar");
 
-// Get the DIV with overlay effect
-var overlayBg = document.getElementById("myOverlay");
-
-// Toggle between showing and hiding the sidebar, and add overlay effect
-function w3_open() {
-    if (mySidebar.style.display === 'block') {
-        mySidebar.style.display = 'none';
-        overlayBg.style.display = "none";
-    } else {
-        mySidebar.style.display = 'block';
-        overlayBg.style.display = "block";
-    }
-}
-
-// Close the sidebar with the close button
-function w3_close() {
-    mySidebar.style.display = "none";
-    overlayBg.style.display = "none";
-}
 
 //invoking reminder modal
 var token = "<?php echo $reminders ?>";
@@ -122,6 +101,7 @@ var userRole = $('#user_role').val();
     showElement('rmodal');
   }
   
+// user log in welcome message
  $(document).ready(function(){
     $('#welcome').hide().slideDown(3000, function(){
        $(this).fadeOut(6000);

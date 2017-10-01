@@ -74,7 +74,7 @@ class DBHandler
    public function action($action, $table, $where = array()) {
    	   if(count($where) === 3) {
    	   	  //define allowable operators
-   	   	  $operators = array('=', '<', '>', '<=', '>=', 'like');
+   	   	  $operators = array('=', '!=', '<', '>', '<=', '>=', 'like', 'REGEXP');
           
    	   	  $field    = $where[0];
    	   	  $operator = $where[1];

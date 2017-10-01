@@ -9,18 +9,24 @@
  $admin = $user->data();
  
  
-function activePage($page){
-	$ser = $_SERVER["SCRIPT_NAME"];
 
-	if ($page == $ser) {
 
-		return "w3-white w3-text-red";
-	}
-}
-
+//set up useful variables to be used elsewhere
 $projectsForApproval = DBHandler::getInstance()->get('projects', array('status','=',0))->results();
+$billsForApproval = DBHandler::getInstance()->get('projects', array('bill_status','=',0))->results();
+//initialize notifications variables
+$numProjects = count($projectsForApproval);
+$numBills = count($billsForApproval);
+$numProjectReminders = 1;
+$numBillReminders = 1;
+$numReminders = $numBillReminders + $numProjectReminders;
+$totalNotices = $numProjects + $numBills + $numReminders;
+
+//get reminders
 $reminders = count(DBHandler::getInstance()->get('projects', array('status','=',2))->results());
+//if(empty($projectsForApproval)) die();
 if(Session::exist('remind_later')) {
-  $reminders = array();//help display reminder dialog on next log in
+  $reminders = 0;//help display reminder dialog on next log in
 }
+
 ?>

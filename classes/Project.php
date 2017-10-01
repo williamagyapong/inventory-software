@@ -2,8 +2,13 @@
 
 class Project extends Model
 {
-    private $table = 'projects';
 
+
+    /**
+    *fetch all projects or a particular project
+    *@param id | int
+    *@return projects | array
+    */
 	public function get($id="*")
 	{
 		if($id=="*"){
@@ -16,8 +21,112 @@ class Project extends Model
 		}
 	}
 
+    
+    /**
+    * insert project details 
+    * @param void
+    * @return boolean
+    */
+
+    public function register()
+    {
+    	$projectManager = json_encode(array('name'=>ucwords(Input::get('name_of_project_manager')), 'phone'=>Input::get('project_manager_phone')));
+		$storesAdmin = json_encode(array('name'=>ucwords(Input::get('name_of_stores_admin')), 'phone'=>Input::get('stores_admin_phone')));
+
+    	if($this->_db->insert($this->table, [
+                                  'name'=>ucfirst(Input::get('name')),
+                                  'location'=>ucfirst(Input::get('location')),
+                                  'description'=>ucfirst(Input::get('description')),
+                                  'company_in_charge'=>ucfirst(Input::get('company')),
+                                  'date_begun'=>Input::get('commencement_date'),
+                                  'date_completion'=>Input::get('completion_date'),
+                                  'project_manager'=>$projectManager,
+                                  'stores_admin'=>$storesAdmin
+			])) {
+    		return true;//success
+    	}
+    	return false;//failure
+    }
 
 
+    /**
+    * change project details
+    * @param void
+    * @return boolean
+    */
+
+    public function update()
+    {
+    	$projectManager = json_encode(array('name'=>ucwords(Input::get('name_of_project_manager')), 'phone'=>Input::get('project_manager_phone')));
+		$storesAdmin = json_encode(array('name'=>ucwords(Input::get('name_of_stores_admin')), 'phone'=>Input::get('stores_admin_phone')));
+
+		if($this->_db->update($this->table, [
+                                  'name'=>ucfirst(Input::get('name')),
+                                  'location'=>ucfirst(Input::get('location')),
+                                  'description'=>ucfirst(Input::get('description')),
+                                  'company_in_charge'=>ucfirst(Input::get('company')),
+                                  'date_begun'=>Input::get('commencement_date'),
+                                  'date_completion'=>Input::get('completion_date'),
+                                  'project_manager'=>$projectManager,
+                                  'stores_admin'=>$storesAdmin,
+                                  'status'=>0
+			],Input::get('project_id'))) {
+			return true; // success
+		}
+		return false; // failure
+    }
+
+
+    /**
+	*fetch all projects approved by manager
+	*@param void
+	*@return projects | array
+	*/
+	public function getApproved()
+	{
+		return $this->_db->get($this->table, array('status', '=', 1))->results();
+	}
+
+
+	/**
+	*fetch all projects with bill of required materials not prepared
+	*@param void
+	*@return projects | array
+	*/
+	public function getInProgress()
+	{
+		$currentDate = date('Y-m-d');
+		//$currentDate = '2017-09-02';
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `date_begun`<='{$currentDate}'ORDER BY `name` ASC LIMIT 5")->results();
+	}
+
+	/**
+	*fetch all projects with bill of required materials not prepared
+	*@param void
+	*@return projects | array
+	*/
+	public function getUnbilled()
+	{
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 'none' ORDER BY `name` ASC")->results();
+	}
+    
+
+	/**
+	*fetch all projects with approved bill of materials
+	*@param void
+	*@return projects | array
+	*/
+	public function getbilled()
+	{
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 1 ORDER BY `name` ASC")->results();
+	}
+
+
+	/**
+	*indicate the status of each project on display
+	*@param administrator/user | string
+	*@return string
+	*/
 	public function displayStatus($admin, $id = null)
 	{
 	   if($id)
@@ -49,29 +158,39 @@ class Project extends Model
 	}
 
 
-	public function updateStatus($token, $id)
+	/**
+	*change the status of projects per initiated requests
+	*@param directive | string, project id | int
+	*@return boolean
+	*/
+	public function updateStatus($token, $id, $field='status')
 	{
 		
 		switch($token)
 		{
 			case 'remind_later':
-				$this->_db->update($this->table, ['status'=>2], $id);
+				$this->_db->update($this->table, [$field=>2], $id);
 				break;
 			case 'satisfied':
-				if($this->_db->update($this->table, ['status'=>1, 'd_notes'=>''], $id)) {
+				if($this->_db->update($this->table, [$field=>1, 'd_notes'=>''], $id)) {
 					return true;
 				}
 				break;
 			case 'print':
-				if($this->_db->update($this->table, ['status'=>1], $id)) {
+				if($this->_db->update($this->table, [$field=>1, 'd_notes'=>''], $id)) {
 					return true;
 				}
 				break;
 			case 'notsatisfied':
 			   if($this->_db->update($this->table, [
-			   	                  'status'=>3,
+			   	                  $field=>3,
 			   	                  'd_notes'=>Input::get('notes')
 			   	                  ], $id)) {
+			   		return true;
+			   }
+			   break;
+			case 'bill_saved':
+			   if($this->_db->update($this->table, ['bill_status'=>0], $id)) {
 			   		return true;
 			   }
 			   break;
@@ -80,15 +199,19 @@ class Project extends Model
 			break;
 		}
 		
-		
 	}
 
 
+	/**
+	*display projects put on reminder for viewing
+	*@param void
+	*@return html elements
+	*/
 	public function displayReminded()
 	{
 		$projects = $this->_db->get($this->table, ['status', '=', 2])->results();
 		echo "
-	        <div id=\"remindedmodal\">
+	        <div id=\"remindedmodal\" style=\"position:absolute;margin-left:25px;margin-top:50px\">
 			    <div class=\"w3-modal-content w3-card w3-border w3-round\" style=\"max-width:690px;margin-top: 30px;\">
 
 			      <div class=\"w3-center\"><br>
@@ -166,8 +289,8 @@ class Project extends Model
 		                      </fieldset>
 		                      <fieldset class=\"w3-container w3-border-top w3-padding-16 w3-light-grey\">
 	                       <div class=\"w3-right\">
-	                        <button class=\"w3-button  w3-indigo w3-section w3-padding\" type=\"submit\" name=\"satisfied\" onclick=\"updateProject('".$project->id."', 'satisfied');document.getElementById('div".$project->id."').style.display='none'\"><b>Satisfied</b></button>
-	                        <button class=\"w3-button  w3-indigo w3-section w3-padding\" type=\"submit\" name=\"notsatisfied\" onclick=\"showElement('notsatisfied-modal', '".$project->id."');document.getElementById('div".$project->id."').style.display='none'\"><b>Not Satisfied</b></button>
+	                        <button class=\"w3-button\" type=\"submit\" name=\"satisfied\" onclick=\"updateProject('".$project->id."', 'satisfied');document.getElementById('div".$project->id."').style.display='none'\"><b>Satisfied</b></button>
+	                        <button class=\"w3-button\" type=\"submit\" name=\"notsatisfied\" onclick=\"showElement('notsatisfied-modal', '".$project->id."');document.getElementById('div".$project->id."').style.display='none'\"><b>Not Satisfied</b></button>
 	                        </div>
 	                       </fieldset>
 		                  </div>
@@ -181,30 +304,9 @@ class Project extends Model
 	}
 
 
+	
 
-	public function createMaterialsBill() 
-	{
-		$materials = [];
-		$totalRows = Input::get('total_rows');
-		for($i = 0; $i<$totalRows; $i++)
-		{
-			$materials[Input::get('name_'.$i)] = array(
-												Input::get('quantity_'.$i),
-												Input::get('quantity_available_usable_'.$i),
-												Input::get('quantity_to_purchase_'.$i)
-												);
-		}
-		$query = $this->_db->insert('project_materials', [
-									'project_id'=>Input::get('project_id'),
-									'materials'=>json_encode($materials)
-								]);
-		if($query) {
-			return true;
-		}
-		return false;
-	}
-
-
+	
 
 
 }

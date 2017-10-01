@@ -41,16 +41,17 @@ $GLOBALS['config'] = array(
 
         'app'=>array(
               'name'=>'Napol\'s Material Inventory Software',
+              'base_url'=>'/inventory-software',
               'version'=>'1.0',
               
           ),
         'developer'=>array(
               'name'=>'Agyapong William',
-              'contact'=>0501426834
+              'contact'=>'0501426834'
           ),
         'client'=>array(
               'name'=>'Napoleon',
-              'contact'=>0200665525
+              'contact'=>'0200665525'
           )
 	);
 
@@ -69,6 +70,7 @@ spl_autoload_register(function($class_name){
 // access functions
 require_once 'functions.php';
 
-
+$p = new Project();
+//print_array($p->getInProgress());exit();
 
 ?>

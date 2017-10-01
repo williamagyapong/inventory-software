@@ -1,7 +1,36 @@
 <?php
- 
  require_once 'core/init.php';
- 
+
+ if(Input::exist('login')) {
+              $errorMsg = [];
+              $validate = new Validator();
+
+              $validation = $validate->check($_POST, array(
+                          'username' => array('required'=> true),
+                          'password' => array('required'=> true)
+                ));
+
+              if($validation->passed()) {
+                //log user in
+                $user = new User();
+
+                //$remember = (Input::get('remember')=='on')? true: false;
+                $login = $user->login(Input::get('username'), Input::get('password'));
+                if($login) {
+                   Redirect::to('dashboard');
+                  //header('Location: profile.php');
+                } else {
+                          $errorMsg[] = "Invalid credentials. Please try again";
+                }
+              } else {
+
+                  $errorMsg[] = $validation->errors();
+                /*foreach($validation->errors() as $error) {
+                  echo '<li>'.$error.'</li>';
+                }*/
+                
+              }
+            }
 ?>
 
 <!DOCTYPE html>
@@ -14,33 +43,86 @@
   <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"> -->
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-	<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 
 	<style type="text/css">
     body{
+      background: #00BFFF;
       background-image: url(images/bgimg.jpg);
       background-repeat: no-repeat;
-      background-size: 100%;
+      /*background-size: 100%;*/
     }
   
   .wrapper{
     /*position: absolute;*/
-    height:350px;
-    margin-top: 150px;
+    height:550px;
+    width: 350px;
+    /*margin-top: 50px;*/
     padding: 15px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 5px;
+    background: #f8f8f8;
+    /*border-radius: 10px;*/
+    
 
+  }
+  .wrapper2{
+    height:400px;
+    width: 350px;
+    position: absolute;
+    left: 50% ;
+    margin-left: -175px;
+    margin-top: 130px;
+    padding: 15px;
+    /*background: #f8f8f8;
+    border:1px solid red;
+    border-radius: 10px;*/
+    
+
+  }
+  .footer{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+
+  }
+  .logo{
+    width: 150px;
+    position: relative;
+    left: 50%;
+    text-align: center;
+    margin-bottom: 47px;
+    margin-left: -75px;
+    background:#4ca1af;
+    
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+  }
+  .controls{
+    margin-left: 50px;
+    margin-bottom: 70px;
+  }
+  #login-alert{
+    color: #ff0000;
+    font-size: 1.2em;
+    height: 50px;
+    width: 100%;
+   /* border:1px solid black;*/
   }
   .error{
     font-family: verdana;
     font-weight: bold;
     color: #ff0000;
-    width: 100%;
-    position: absolute;
+    position: relative;
+    padding: 10px;
+    background: 
+    margin-top: 150PX;
+  }
+  #thisusername{
+    font-size: 1.2em;
+    font-weight: bolder;
     text-align: center;
-    margin-top: 80PX;
+    color: #fff;
   }
   @media(max-width: 480px) {
   .container{
@@ -68,9 +150,14 @@ form{
   font-family: arial;
 }
 .center-logo{
-  text-align: center;
+  /*text-align: center;
   margin-bottom: 4px;
-  margin-left: 95px;
+  margin-left: 95px;*/
+  padding: 5px;
+  background:#4ca1af;
+  background:-webkit-linear-gradient(to right, #4ca1af,#c4e0e5);
+  background:linear-gradient(to right, #4ca1af,#c4e0e5);
+  border-radius: 5px;
 }
 .first-letter{
   font-family: verdana;
@@ -78,13 +165,23 @@ form{
   font-size: 18px;
   color: #0000ff;
 }
+.text-field{
+  padding-left: 10px;
+  border-radius: 5px;
+}
 .app-name{
   font-weight: bold;
-  margin-bottom: 10px;
   text-align: center;
+  font-size: 1.5em;
+  color: #ccc;
+}
+.version{
+  float: right;
+
+  padding-right: 30px;
 }
 .name_input{
-  height: 60px;
+  height: 50px;
   font-size:20px;
 }
 
@@ -102,72 +199,65 @@ form{
 </head>
 <body>
 <!-- Top container -->
-<div class="container" >
-  <div class="row">
-    <div class="error w3-padding">
-      
-     <?php
-          // handle user login process
-        if(Input::exist('login')) {
-           
-              $validate = new Validator();
-
-              $validation = $validate->check($_POST, array(
-                          'username' => array('required'=> true),
-                          'password' => array('required'=> true)
-                ));
-
-              if($validation->passed()) {
-                //log user in
-                $user = new User();
-
-                //$remember = (Input::get('remember')=='on')? true: false;
-                $login = $user->login(Input::get('username'), Input::get('password'));
-                if($login) {
-                   Redirect::to('dashboard.php');
-                  //header('Location: profile.php');
-                } else {
-                          echo "<h3>Sorry, invalid credentials!</h3>";
-                }
-              } else {
-                foreach($validation->errors() as $error) {
-                  echo '<li>'.$error.'</li>';
-                }
-                
-              }
-            }
-
+<div class="wrapper2">
+ <div class="logo">
+   <!-- <img src="images/administrator.ico" width="130" height="90" class="center-logo"> -->
+   <img src="images/logo2.png" width="130" height="90" class="center-logo"> 
+ </div>
+ <p id="thisusername"></p>
+ <div class="controls">
+   <form action="index.php" method="post">
+     <div id="start">
+       <input id="username" type="text" tabindex="1" name="username" value="<?php echo Input::get('username');?>" placeholder="Username" autocomplete="off" required="required" class="text-field">
+     <span id="next" tabindex="2" class="my-button fa fa-arrow-right"></span>
+     </div>
+     <div style="display: none;" id="final">
+       <input id="password" tabindex="3" type="password" name="password" value="<?php echo Input::get('password');?>" placeholder="Password" required="required" class="text-field">
+       <button id="login" type="submit" tabindex="4" name="login" class="my-button fa fa-arrow-right"></button>
+     </div>
+     <p id="login-alert">
+      <?php if(isset($errorMsg)) 
+       { 
+         foreach($errorMsg as $error) {
+           echo $error.'<br>';
+         }
+       }
       ?>
-    </div>
-    <div class="col-md-4 col-mdoffset-4 wrapper">
-      <img src="images/logo2.png" width="130" height="90" class="center-logo">
-      <div class="app-name"><span class="first-letter">N</span>apol's <span class="first-letter">M</span>aterial <span class="first-letter">I</span>nventory <span class="first-letter">S</span>oftware</div>
-      <form action="index.php" method="post" role="form">
-       <div class="form-group has-success has-feedback">
-          <label class="control-label sr-only" for="inputGroupSuccess4"></label>
-          <div class="input-group">
-             <span class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
-            <input type="text" name= "username" class="form-control name_input" placeholder ="Username" id="inputGroupSuccess4" autocomplete="off">
-          </div>
-          <span class="glyphicon glyphicon form-control-feedback glyphicon_ok" aria-hidden="true"></span>
-          <span id="inputGroupSuccess4Status" class="sr-only">(success)</span>
-       </div>
-       <div class="form-group has-success has-feedback">
-          <label class="control-label sr-only" for="inputGroupSuccess4">Input group with success</label>
-          <div class="input-group">
-             <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
-            <input type ="password" name = "password" class="form-control name_input" placeholder ="Password" id="inputGroupSuccess4" aria-describedby="inputGroupSuccess4Status">
-          </div>
-          <span class="glyphicon glyphicon form-control-feedback glyphicon_ok" aria-hidden="true"></span>
-          <span id="inputGroupSuccess4Status" class="sr-only">(success)</span>
-         </div>
-         <button type="submit" name="login" class="btn btn-primary btn-block sumit_button">Sign In</button>  
-     </form>
-    </div>
-  </div>
+     </p>
+   </form>
+ </div>
 </div>
-
+<div class="footer">
+  <p class="app-name">Napol's Material Inventory Software</p>
+ <p class="version">Version 1.0</p>
+</div>
+<script src="js/jquery.js"></script>
 <script src="js/custom.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+     $('#next').click(function() {
+       var username = $('#username').val();
+       if(username=='') {
+          $('#login-alert').html("<b>Please enter username</b>");
+          setTimeout(function(){
+             $('#login-alert').html('');
+          }, 5000)
+       } else {
+          $('#start').hide(function() {
+             $('#final').show();
+             $('#thisusername').html($('#username').val())
+          });
+       }
+     })
+
+     
+    setTimeout(function(){
+         $('#login-alert').html('');
+      }, 5000);
+     
+  })
+</script>
 </body>
 </html>
 

@@ -8,7 +8,12 @@ body{
 a{
 	text-decoration: none !important;
 }
-
+.logo{
+	background:#4ca1af;
+    background:-webkit-linear-gradient(to right, #4ca1af,#c4e0e5);
+    background:linear-gradient(to right, #4ca1af,#c4e0e5);
+    border-radius: 7px;
+}
 #main-content{
 	margin-left:265px;
 	margin-top:43px;
@@ -59,6 +64,73 @@ a{
 	height: 65px;
 }
 
+.table-input{
+	width: 130px;
+	padding-left: 10px;
+}
 #error-dialog{
 	width: 70%;
+}
+
+input[type=submit],
+input[type=button],
+button[type=submit]:not(.mult_submit),
+input[type=reset],
+button[type=reset],
+input[name=submit_reset],
+span.my-button,
+button.my-button,
+input.button {
+    margin: 6px 14px;
+    border: 1px solid #aaa;
+    padding: 3px 7px;
+    color: #111;
+    text-decoration: none;
+    background: #ddd;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    text-shadow: 0 1px 0 #fff;
+	background-size: 100% 100%;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#d8d8d8));
+	background: -webkit-linear-gradient(top, #f8f8f8, #d8d8d8);
+	background: -moz-linear-gradient(top, #f8f8f8, #d8d8d8);
+	background: -ms-linear-gradient(top, #f8f8f8, #d8d8d8);
+	background: -o-linear-gradient(top, #f8f8f8, #d8d8d8);
+}
+
+input[type=submit]:hover,
+input[type=button]:hover,
+button[type=submit]:not(.mult_submit):hover,
+input[type=reset]:hover,
+button[type=reset]:hover,
+input[name=submit_reset]:hover,
+span.my-button:hover,
+button.my-button:hover,
+input.button:hover {
+    position: relative;
+	background-size: 100% 100%;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+	background: -webkit-linear-gradient(top, #fff, #ddd);
+	background: -moz-linear-gradient(top, #fff, #ddd);
+	background: -ms-linear-gradient(top, #fff, #ddd);
+	background: -o-linear-gradient(top, #fff, #ddd);   
+    cursor: pointer;
+}
+
+table th{
+	border-right: 1px solid #d8d8d8;
+}
+
+.menu-modal{
+	max-width:690px;
+	margin-top:0;
+}
+
+.msg-board{
+	position: absolute;
+	margin-top: 60px;
+	b/*ackground: red;
+	width: 500px;
+	height: 300px;*/
 }

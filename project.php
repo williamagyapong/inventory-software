@@ -2,6 +2,8 @@
    require_once 'front_page_config.php';
    $project = new Project();
    $projects = $project->get();
+   $unbilledProjects = $project->getUnbilled();
+   //print_array($project->getProjectMaterials(3));
 ?>
 
 <!-- front end matter -->
@@ -12,8 +14,9 @@
   <title>Dashboard</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/w3.css">
   <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+  <link rel="stylesheet" href="css/w3.css">
   <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
   <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"> -->
   <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -27,10 +30,11 @@
   }
   .project-content{
     background-image: url(images/conimg1.jpg);
-    background-repeat: no-repeat;
-    background-size: 100%; 
+    background-repeat: no-repeat; 
     min-height: 500px;
   }
+
+ 
   </style>
  </head>
 <body id="body">
@@ -63,12 +67,9 @@
     <div id="msg-dialog" class="w3-card-4 w3-text-red w3-padding" style="margin-left: 70px;">
         <h3>The bill has been successfully submited for approval</h3>
     </div>
-    <?php Session::delete('R_SUCCESS');?>
     <?php endif;?>
-     
-
+    <?php Session::delete('R_SUCCESS');?><!-- disable success message-->
     <div class="w3-container">
-      <?php if($admin->role=='storekeeper'):?><!-- show modal for storekeeper only -->
         <!-- modal for project registration -->
       <div id="modal" class="tab" style="display: none;">
         <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
@@ -128,27 +129,27 @@
               </fieldset>
               <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                 <div class="w3-right">
-                  <button class="w3-button w3-indigo w3-section w3-padding w3-round" type="submit" name="register" value="register_project"><b>Submit For Approval</b></button>
+                  <button class="w3-button" type="submit" name="register" value="register_project"><b>Submit For Approval</b></button>
                 </div>
              </div>
             </div>
           </form>
         </div>
       </div> 
-          <!-- Required materials Bill -->
+          <!--  Required materials Bill form-->
       <div id="bill-modal" class="tab" style="display: none;">
         <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
           <span id="p-close-btn" onclick="hideElement('bill-modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Required Materials Bill</h3>
           </div>
-          <form id="mr_form" class="w3-container" action="action_page.php" method="post" onsubmit="return validateForm('mr_form')">
+          <form id="mr_form" class="w3-container" action="action_page.php" method="post" onsubmit="return validateForm()">
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
               <input type="hidden" name="total_rows">
               <label><b>Name of Project:</b></label>
                 <select name="project_id" class="w3-select w3-margin-bottom w3-border" required>
                   <option value=""></option>
-                  <?php foreach($projects as $thisProject):?>
+                  <?php foreach($unbilledProjects as $thisProject):?>
                     <option value="<?php echo $thisProject->id;?>"><?php echo $thisProject->name;?></option>
                   <?php endforeach;?>
                 </select>
@@ -168,10 +169,10 @@
                     <input type="hidden" name="COUNTER">
                     <tr id="field_row_<?php echo $x;?>">
                       <td><input type="checkbox" name="checked_<?php echo $x;?>" disabled></td>
-                      <td><input type="text" name="name_<?php echo $x;?>" onblur="checkRow('mr_form')"></td>
-                      <td><input type="number" name="quantity_<?php echo $x;?>" onblur="checkRow('mr_form')"></td>
-                      <td><input type="number" name="quantity_available_usable_<?php echo $x;?>" onblur="checkRow('mr_form')"></td>
-                      <td><input type="number" name="quantity_to_purchase_<?php echo $x;?>" onblur="checkRow('mr_form')"></td>
+                      <td><input class="material table-input" type="text" name="name_<?php echo $x;?>" onblur="checkRow();"></td>
+                      <td><input type="number" name="quantity_<?php echo $x;?>" class="table-input" onblur="checkRow();autoFill()"></td>
+                      <td><input type="text" name="quantity_available_usable_<?php echo $x;?>" class="table-input" onblur="checkRow()" readonly></td>
+                      <td><input type="text" name="quantity_to_purchase_<?php echo $x;?>" class="table-input" onblur="checkRow()" readonly></td>
                     </tr>
                   <?php endfor;?>
                   </tbody>
@@ -179,19 +180,18 @@
               </div>
               <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                 <div>
-                  <span onclick="toggleFormRow('mr_form','add_row')" class="w3-button w3-teal w3-padding w3-round"><b>Add Row</b></span>
-                  <span onclick="toggleFormRow('mr_form','remove_row')" class="w3-button w3-red w3-padding w3-round"><b>Remove Row</b></span>
+                  <span onclick="toggleFormRow('add_row')" class="w3-button my-button"><b>Add Row</b></span>
+                  <span onclick="toggleFormRow('remove_row')" class="w3-button w3-text-red my-button"><b>Remove Row</b></span>
                 </div>
                 <div class="w3-right">
                   <span id="alert" class="w3-text-red w3-padding"></span>
-                  <button class="w3-button w3-section w3-indigo w3-padding w3-round" type="submit" name="p_token" value="submit_bill"><b>Submit For Approval</b></button>
+                  <button class="w3-button" type="submit" name="p_token" value="submit_bill"><b>Submit For Approval</b></button>
                 </div>
               </div>
             </div>
           </form>
         </div>
       </div> 
-    <?php endif;?>
      <!-- modal for current projects -->
       <div id="modal2" class="tab" style="display: none;">
         <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
@@ -288,7 +288,7 @@
                             </fieldset>
                             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                               <div class="w3-right">
-                                <button class="w3-button w3-indigo w3-section w3-padding w3-round" type="submit" name="register" value="update_project"><b>Submit For Approval</b></button>
+                                <button class="w3-button" type="submit" name="register" value="update_project"><b>Submit For Approval</b></button>
                               </div>
                            </div>
                           </div>
@@ -346,14 +346,41 @@
                         <footer class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                         <?php if((($thisProject->status==0)||($thisProject->status==2))&&($admin->role=='manager')):?>
                           <div class="w3-right">
-                            <button class="w3-button  w3-indigo w3-section w3-padding" type="submit" name="p_token" onclick="<?php echo "updateProject('".$thisProject->id."','satisfied')";?>;window.location='project.php'"><b>Satisfied</b></button>
-                            <button  onclick="<?php echo "showElement('notsatisfied-modal','".$thisProject->id."')";?>" class="w3-button  w3-indigo w3-section w3-padding"><b>Not Satisfied</b></button>
+                            <button class="w3-button" type="submit" name="p_token" onclick="<?php echo "updateProject('".$thisProject->id."','satisfied')";?>;window.location='project.php'"><b>Satisfied</b></button>
+                            <button class="w3-button" type="submit" onclick="<?php echo "showElement('notsatisfied-modal','".$thisProject->id."')";?>" ><b>Not Satisfied</b></button>
                             <?php elseif(($thisProject->status==3)&&($admin->role=='storekeeper')):?>
-                            <button  onclick="<?php echo "showElement('reconcile-modal','".$thisProject->id."')";?>" class="w3-button w3-right  w3-indigo w3-section w3-padding"><b>Reconcile Differences</b></button>
+                            <button class="w3-button" type="submit" onclick="<?php echo "showElement('reconcile-modal','".$thisProject->id."')";?>"><b>Reconcile Differences</b></button>
                           </div>
-                          <?php endif;?>
+                          <?php endif;?><!-- end of footer buttons if -->
                         </footer>
-                        <?php endif;?>
+                        <!-- load materials if any -->
+                        <?php $materials = $project->getProjectMaterials($nProject->id);?>
+                        <?php if(count($materials) !=0):?>
+                        <fieldset class="w3-white">
+                          <legend class="w3-text-red"><b>Project Materials</b></legend>
+                          <div class="w3-responsive">
+                            <table class="w3-table w3-striped w3-bordered">
+                             <tr>
+                              <th></th>
+                              <th>Name of Material Needed For The Project</th>
+                              <th>Quantity Needed</th>
+                              <th>Quantity Already Available And Usable</th>
+                              <th>Quantity to Purchase</th>
+                             </tr>
+                              <?php foreach($materials as $material):?>
+                             <tr>
+                              <td></td>
+                              <td><?php echo $material->name;?></td>
+                              <td><?php echo $material->quantity_needed;?></td>
+                              <td><?php echo $material->quantity;?></td>
+                              <td><?php echo $material->quantity<$material->quantity_needed?$material->quantity_needed-$material->quantity: 0; ?></td>
+                             </tr>
+                             <?php endforeach;?>
+                            </table>
+                          </div>
+                        </fieldset>
+                        <?php endif;?><!-- end of materials if -->
+                        <?php endif;?><!-- end of project type if -->
                       </div>
                   </div>
                 </td>
@@ -378,49 +405,23 @@
      <source src="audio/mouseclick2.mp3" type="audio/mpeg">                     
 </audio>
 <!-- Include javascript -->
-<script type="text/javascript" src="js/custom.js"></script>
+
 <script src="js/jquery.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/custom.js"></script>
+<script src="js/project_stock.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script>
-// Get the Sidebar
-var mySidebar = document.getElementById("mySidebar");
 
-// Get the DIV with overlay effect
-var overlayBg = document.getElementById("myOverlay");
 
-// Toggle between showing and hiding the sidebar, and add overlay effect
-function w3_open() {
-    if (mySidebar.style.display === 'block') {
-        mySidebar.style.display = 'none';
-        overlayBg.style.display = "none";
-    } else {
-        mySidebar.style.display = 'block';
-        overlayBg.style.display = "block";
-    }
-}
 
-// Close the sidebar with the close button
-function w3_close() {
-    mySidebar.style.display = "none";
-    overlayBg.style.display = "none";
-}
-
-function soundEffect(audioElement)
-{
-   var audioFile = document.getElementById(audioElement);
-   audioFile.play();
-}
-
-$("[data-toggle='tooltip']").tooltip({
-          html:true,
-        });
-$("#msg-dialog").fadeOut(15000);//15 seconds later
 
 //background properties manipulation
 $(document).on('click', '#tabs', function(){
   $('.project-content').css({"background":"white"});
   //$(this).css({"background":"white"});
 })
+
 $(document).on('click', '#p-close-btn', function(){
 
   $('.project-content').css({"background-image":"url(images/conimg1.jpg)",
@@ -429,11 +430,7 @@ $(document).on('click', '#p-close-btn', function(){
   
 })
 
-// hide 45 fields in the required materias section
 
-$(document).ready(function(){
-    toggleFormRow('mr_form');
-})
 
 </script>
 

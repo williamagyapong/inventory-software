@@ -1,12 +1,14 @@
 <?php
 require_once 'core/init.php';
-//print_array($_SESSION);
+
 /*
 |----------------------------------------------------------------------- 
-| Project registration
+| Project registration/update
 |----------------------------------------------------------------------- 
 */
 $project = new Project();
+$matObject = new Material();
+
 if(Input::exist('register'))
 {
 	$validate = new Validator();
@@ -25,34 +27,14 @@ if(Input::exist('register'))
 		);
 	if($validation->passed())
 	{
-		$projectManager = json_encode(array('name'=>Input::get('name_of_project_manager'), 'phone'=>Input::get('project_manager_phone')));
-		$storesAdmin = json_encode(array('name'=>Input::get('name_of_stores_admin'), 'phone'=>Input::get('stores_admin_phone')));
+		
 		switch(Input::get('register'))
 		{
 			case 'register_project':
-			$queryRun=DBHandler::getInstance()->insert('projects', [
-                                  'name'=>Input::get('name'),
-                                  'location'=>Input::get('location'),
-                                  'description'=>Input::get('description'),
-                                  'company_in_charge'=>Input::get('company'),
-                                  'date_begun'=>Input::get('commencement_date'),
-                                  'date_completion'=>Input::get('completion_date'),
-                                  'project_manager'=>$projectManager,
-                                  'stores_admin'=>$storesAdmin
-			]);
+			$queryRun= $project->register();
 			break;
 			case 'update_project':
-			$queryRun=DBHandler::getInstance()->update('projects', [
-                                  'name'=>Input::get('name'),
-                                  'location'=>Input::get('location'),
-                                  'description'=>Input::get('description'),
-                                  'company_in_charge'=>Input::get('company'),
-                                  'date_begun'=>Input::get('commencement_date'),
-                                  'date_completion'=>Input::get('completion_date'),
-                                  'project_manager'=>$projectManager,
-                                  'stores_admin'=>$storesAdmin,
-                                  'status'=>0
-			],Input::get('project_id'));
+			$queryRun= $project->update();
 			break;
 			default:
 			 #code to execute
@@ -75,18 +57,23 @@ if(Input::exist('register'))
 	}
 }
 
-// update project status 
+
+/*
+|=====================================================================
+|  post method requests handling
+|=====================================================================
+*/
 if(Input::exist('p_token'))
 {
 	switch(Input::get('p_token'))
 	{
 		case 'remind_later':
-			$project->updateStatus(Input::get('p_token'),Input::get('projectId'));
+			$project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'));
 			Session::put(Input::get('p_token'), Input::get('projectId'));
 		break;
 		
 		case 'satisfied':
-			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'))) {
+			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'))) {
 				Redirect::to('dashboard.php');
 			} else {
 				//trigger error message
@@ -94,7 +81,7 @@ if(Input::exist('p_token'))
 			}
 		break;
 		case 'notsatisfied':
-			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'))) {
+			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'))) {
 				Redirect::to('dashboard.php');
 			} else {
 				//trigger error message
@@ -103,19 +90,24 @@ if(Input::exist('p_token'))
 			
 		break;
 		case 'print':
-			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'))) {
-				Session::put('PROJECT_ID', Input::get('projectId'));
-				Redirect::to('print.php');
+			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'))) {
+				if(Input::get('field_name')=='bill_status') {
+					Session::put('BILL_ID', Input::get('projectId'));
+				} else {
+
+						Session::put('PROJECT_ID', Input::get('projectId'));
+				}
+				Redirect::to('print.php');//redirect for printing
+
 			} else {
-				//trigger error message
-				Redirect::to(502);
+				Redirect::to(502);//trigger error message
 			}
 	    break;
-	    case 'print_session':
-	    	Session::put('PRINTING', TRUE);//set this token to control display on show_project page
+	    case 'print_project_session':
+	    	Session::put('PRINT_PROJECT', TRUE);//set this token to control display on show_project page
 	    break;
 	    case 'submit_bill':
-			if($project->createMaterialsBill()) {
+			if($matObject->prepareBill()) {
 				Session::put('R_SUCCESS', 'bill');
 				Redirect::to('project.php');
 			} else {
@@ -123,15 +115,66 @@ if(Input::exist('p_token'))
 				Redirect::to(502);
 			}
 	    break;
+	    case 'receive':
+			if($matObject->receive()) {
+				Session::put('R_SUCCESS', 'received');
+				Redirect::to('stock.php');
+			} else {
+				//trigger error message
+				Redirect::to(502);
+			}
+		case 'dispatch':
+			 if($matObject->saveDispatchedItems()) {
+			 	Session::put('R_SUCCESS', 'dispatched');
+			 	Redirect::to('stock.php');
+			 }
+	    break;
+	    case 'check_material':
+	    	echo $matObject->exist(Input::get('term'));
+	    break;
+	    case 'auto_add_material':
+	    	 $matObject->add([Input::get('term'), 0, '']);
+	    break;
+	    case 'add_new_mat':
+	    //die('hit');
+	    	 if($matObject->add()) {
+	    	 	Session::put('R_SUCCESS', 'new_mat_added');
+	    	 	Redirect::to('stock.php');
+	    	 }
+	    break;
+	    case 'allow_delete':
+	    	echo $matObject->allowDelete(Input::get('material_id'));
+	    	 
+	    break;
+	    case 'update_stock':
+	    	if($matObject->saveChanges()){
+	    		Session::put('R_SUCCESS', 'changes_saved');
+	    		Redirect::to('stock.php');
+	    	}
+	    break;
+	    case 'delete_mat':
+	    	if($matObject->delete(Input::get('material_id'))) 
+	    	{
+	    		Session::put('R_SUCCESS', 'deleted');
+	    	}
+ 
+	    break;
 		default:
 		//code
 		break;
+	    	
 
 
 	}
 
 }
-//load projects details
+
+
+/*
+|=====================================================================
+|  get method requests handling
+|=====================================================================
+*/
 if(Input::exist('p_token','get'))
 {
 	switch (Input::get('p_token'))
@@ -139,9 +182,26 @@ if(Input::exist('p_token','get'))
 		case 'reminded':
 		     $project->displayReminded();
 			break;
-		
+		case 'get_material':
+	         $data = [];
+	    	 $material = $matObject->get(Input::get('term'));
+	    	 $data['quantity_available'] = $material->quantity;
+	    	 $data['unit'] = $material->unit;
+	    	 echo json_encode($data);
+	    	break;
 		default:
 			# code...
 			break;
 	}
 }
+
+if(Input::exist('load_mat_id', 'get'))
+{
+	$matObject->loadProjectMaterials(Input::get('load_mat_id'));
+}
+
+/*
+|=====================================================================
+| materials autocomplete 
+|=====================================================================
+*/
