@@ -1,5 +1,7 @@
 <?php
  require_once 'front_page_config.php';
+
+ list($approved, $nonSatisfactory, $awaiting) = $project->getRatings();
  
 ?>
 
@@ -8,7 +10,7 @@
 <html>
   <head>
     <link rel="icon" type="image/x-icon" href="images/logo2.png">
-    <title>Dashboard</title>
+    <title>Dashboard | NMIS</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">-->
@@ -50,23 +52,36 @@
     
     <div id="c-levels" class="w3-card-4 w3-padding">
       <h3 class="w3-text-grey">Projects Completion Levels</h3>
+      <!-- canvas for chart -->
       <canvas id="chart" width="250" height="110"></canvas>
     </div>
     <div id="classify" class="w3-card-4 w3-padding" style="margin-top: 25px;">
       <h3 class="w3-text-grey">Project Classifications</h3>
       <p>Non satisfactory Project Registration</p>
       <div class="w3-grey">
-        <div class="w3-container w3-center w3-padding w3-green" style="width:25%">25%</div>
+        <?php if($nonSatisfactory==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $nonSatisfactory;?>%"><?php echo $nonSatisfactory;?>%</div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-red" style="width:<?php echo $nonSatisfactory;?>%"><?php echo $nonSatisfactory;?>%</div>
+        <?php endif;?>
       </div>
 
       <p>Approved Projects</p>
       <div class="w3-grey">
-        <div class="w3-container w3-center w3-padding w3-orange" style="width:50%">50%</div>
+        <?php if($approved==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $approved;?>%"><?php echo $approved;?>%</div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-green" style="width:<?php echo $approved;?>%"><?php echo $approved;?>%</div>
+        <?php endif;?>
       </div>
 
       <p>Projects Awaiting Approval</p>
       <div class="w3-grey">
-        <div class="w3-container w3-center w3-padding w3-red" style="width:25%">25%</div>
+        <?php if($awaiting==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $awaiting;?>%"><?php echo $awaiting;?>%</div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-orange" style="width:<?php echo $awaiting;?>%"><?php echo $awaiting;?>%</div>
+        <?php endif;?>
       </div>
     </div>
   </div>

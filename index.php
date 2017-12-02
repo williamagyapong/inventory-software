@@ -46,12 +46,24 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 
 	<style type="text/css">
-    body{
-      background: #00BFFF;
-      background-image: url(images/bgimg.jpg);
-      background-repeat: no-repeat;
+    body, html{
+      padding: 0;
+      margin: 0;
+      height: 100%;
       /*background-size: 100%;*/
     }
+
+  .container{
+      background: #00BFFF;
+      background-image: url(images/bgimg.jpg);
+      width: 100%;
+      height: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      overflow: none;
+  }
   
   .wrapper{
     /*position: absolute;*/
@@ -173,7 +185,7 @@ form{
   font-weight: bold;
   text-align: center;
   font-size: 1.5em;
-  color: #ccc;
+  color: #ffaaaa;
 }
 .version{
   float: right;
@@ -199,42 +211,45 @@ form{
 </head>
 <body>
 <!-- Top container -->
-<div class="wrapper2">
- <div class="logo">
-   <!-- <img src="images/administrator.ico" width="130" height="90" class="center-logo"> -->
-   <img src="images/logo2.png" width="130" height="90" class="center-logo"> 
- </div>
- <p id="thisusername"></p>
- <div class="controls">
-   <form action="index.php" method="post">
-     <div id="start">
-       <input id="username" type="text" tabindex="1" name="username" value="<?php echo Input::get('username');?>" placeholder="Username" autocomplete="off" required="required" class="text-field">
-     <span id="next" tabindex="2" class="my-button fa fa-arrow-right"></span>
-     </div>
-     <div style="display: none;" id="final">
-       <input id="password" tabindex="3" type="password" name="password" value="<?php echo Input::get('password');?>" placeholder="Password" required="required" class="text-field">
-       <button id="login" type="submit" tabindex="4" name="login" class="my-button fa fa-arrow-right"></button>
-     </div>
-     <p id="login-alert">
-      <?php if(isset($errorMsg)) 
-       { 
-         foreach($errorMsg as $error) {
-           echo $error.'<br>';
+ <div class="container">
+   <div class="wrapper2">
+   <div class="logo">
+     <!-- <img src="images/administrator.ico" width="130" height="90" class="center-logo"> -->
+     <img src="images/logo2.png" width="130" height="90" class="center-logo"> 
+   </div>
+   <p id="thisusername"></p>
+   <div class="controls">
+     <form action="index.php" method="post">
+       <div id="start">
+         <input id="username" type="text" name="username" value="<?php echo Input::get('username');?>" placeholder="Username" autocomplete="off" autofocus="autofocus" required="required" class="text-field">
+       <span id="next" tabindex="0" class="my-button fa fa-arrow-right"></span>
+       </div>
+       <div style="display: none;" id="final">
+         <input id="password" type="password" name="password" value="<?php echo Input::get('password');?>" placeholder="Password" required="required" class="text-field">
+         <button id="login" type="submit" name="login" class="my-button fa fa-arrow-right"></button>
+       </div>
+       <p id="login-alert">
+        <?php if(isset($errorMsg)) 
+         { 
+           foreach($errorMsg as $error) {
+             echo $error.'<br>';
+           }
          }
-       }
-      ?>
-     </p>
-   </form>
+        ?>
+       </p>
+     </form>
+   </div>
+  </div>
+  <div class="footer">
+    <p class="app-name">Napol's Material Inventory Software</p>
+   <p class="version">Version 1.0</p>
+  </div>
  </div>
-</div>
-<div class="footer">
-  <p class="app-name">Napol's Material Inventory Software</p>
- <p class="version">Version 1.0</p>
-</div>
 <script src="js/jquery.js"></script>
 <script src="js/custom.js"></script>
 
 <script type="text/javascript">
+  // login fields toggle code support
   $(document).ready(function(){
      $('#next').click(function() {
        var username = $('#username').val();
@@ -249,6 +264,24 @@ form{
              $('#thisusername').html($('#username').val())
           });
        }
+     })
+
+     //bind enter key press to this element
+     $('#next').keypress(function(e) {
+        if(e.which == 13) {
+          var username = $('#username').val();
+           if(username=='') {
+              $('#login-alert').html("<b>Please enter username</b>");
+              setTimeout(function(){
+                 $('#login-alert').html('');
+              }, 5000)
+           } else {
+              $('#start').hide(function() {
+                 $('#final').show();
+                 $('#thisusername').html($('#username').val())
+              });
+           }
+        }
      })
 
      

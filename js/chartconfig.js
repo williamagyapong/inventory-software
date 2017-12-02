@@ -5,7 +5,7 @@ var myChart = new Chart(ctx, {
         labels: ["Project 1", "Project 2", "Project 3", "Project 4", "Project 5"],
         datasets: [{
             label: 'Duration In Months',
-            data: [12, 19, 3, 5, 2, 3],
+            data: [12, 19, 5, 15, 8],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',

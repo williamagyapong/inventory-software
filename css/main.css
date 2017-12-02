@@ -122,15 +122,12 @@ table th{
 	border-right: 1px solid #d8d8d8;
 }
 
-.menu-modal{
-	max-width:690px;
-	margin-top:0;
-}
+
 
 .msg-board{
 	position: absolute;
 	margin-top: 60px;
-	b/*ackground: red;
+	/*background: red;
 	width: 500px;
 	height: 300px;*/
 }

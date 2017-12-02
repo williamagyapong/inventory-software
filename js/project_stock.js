@@ -1,6 +1,6 @@
 
 // hide the process feedback messaging system by fading out
-$("#msg-dialog").fadeOut(15000);//15 seconds later
+$("#msg-dialog").fadeOut(8000);//10 seconds later
 
 /*
 |=====================================================================
@@ -17,23 +17,52 @@ $(document).ready(function(){
     //check availability of material
     $('.material').blur(function() {
        var materialName = $(this).val();
+       var matObj = $(this);
        //make request to the database for checks and addition
-        $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
-          if(res!=1) {
-            var userRes = confirm('"'+materialName+'" does not exist. Please click OK to add or CANCEL otherwise','');
-            if(userRes) {
-               $.post("action_page.php", {p_token:'auto_add_material', term:materialName},function(data){
+       if(materialName =='') {
+           alert('Please enter a material name')//use custom dialog for this
+           //matObj.removeClass('material')
+       } else {
+            $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
+            if(res!=1) {
+              var userRes = confirm('"'+materialName+'" does not exist. Please click OK to add or CANCEL otherwise','');
+              if(userRes) {
+                 $.post("action_page.php", {p_token:'auto_add_material', term:materialName},function(data){
 
-               });
-            } else {
-                $(this).val('');
-                $(this).focus();
+                 });
+              } else {
+                  matObj.val('');
+                  matObj.attr('autofocus', 'autofocus');
+          
+                  //break;
+              }
             }
-          }
-        })
-       //alert($(this).val())
+          })
+       }
+        
+       
     })
 })
+
+//check whether material already exist
+$('.new-material').blur(function() {
+    var materialName = $(this).val();
+       var matObject = $(this);
+       //make request to the database for checks and addition
+       if(materialName =='') {
+           alert('Please enter a material name')//use custom dialog for this
+           //matObj.removeClass('material')
+       } else {
+            $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
+            if(res==1) {
+               alert(materialName+' is already in stock.');
+              
+                 matObject.val('');
+          }
+        })
+      }
+})
+
 
 // autocomplete functionality
 $(function() {

@@ -30,7 +30,12 @@ border: solid 1pt black;
 
 </head>
 <body id="body">
+  <form id="constraint-form" method="post" action="">
+    <label for="phone-number">phone number</label>
+    <input type="tel" name="phone-number" id="phone-number" value="" pattern="[0-9]{10}" required>
 
+    <input type="submit" name="submit-button" value="submit">
+</form>
   <input type="text" id="output" name="output">
  
 <form accept="" method="post">
@@ -274,5 +279,45 @@ var myChart = new Chart(ctx, {
 var elem = document.body; // Make the body go full screen.
 requestFullScreen(elem);*/
 </script>
+</body>
+</html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>scrollTop demo</title>
+  <style>
+  div.demo {
+    background: #ccc none repeat scroll 0 0;
+    border: 3px solid #666;
+    margin: 5px;
+    padding: 5px;
+    position: relative;
+    width: 200px;
+    height: 100px;
+    overflow: auto;
+  }
+  p {
+    margin: 10px;
+    padding: 5px;
+    border: 2px solid #666;
+    width: 1000px;
+    height: 1000px;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+ 
+<div class="demo"><h1>lalala<input type="text" id="value"></h1><p>Hello</p></div>
+ 
+<script>
+$( "div.demo" ).scrollTop(0);
+$(document).click(function(){
+   $('#value').val($( "div.demo" ).scrollTop());
+})
+</script>
+ 
 </body>
 </html>

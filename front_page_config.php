@@ -1,11 +1,16 @@
 <?php
+/**
+|========================================================================================================
+| Generic page configurations are set up here
+|========================================================================================================
+*/
  require_once 'core/init.php';
  $user = new User();
 
  if(!$user->isLoggedIn()) {
     Redirect::to('index.php');//user authentication
  }
- 
+ $project = new Project();
  $admin = $user->data();
  
  
@@ -14,11 +19,12 @@
 //set up useful variables to be used elsewhere
 $projectsForApproval = DBHandler::getInstance()->get('projects', array('status','=',0))->results();
 $billsForApproval = DBHandler::getInstance()->get('projects', array('bill_status','=',0))->results();
+
 //initialize notifications variables
 $numProjects = count($projectsForApproval);
 $numBills = count($billsForApproval);
-$numProjectReminders = 1;
-$numBillReminders = 1;
+$numProjectReminders = 0;
+$numBillReminders = 0;
 $numReminders = $numBillReminders + $numProjectReminders;
 $totalNotices = $numProjects + $numBills + $numReminders;
 

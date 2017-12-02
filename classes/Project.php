@@ -13,7 +13,7 @@ class Project extends Model
 	{
 		if($id=="*"){
 			//select all products
-	      return $this->_db->select("SELECT * FROM {$this->table} ORDER BY `name` ASC")->results();
+	      return $this->_db->select("SELECT * FROM {$this->table} ORDER BY `date_begun` DESC")->results();
 		}
 		else{
 			//select a particular product
@@ -21,7 +21,6 @@ class Project extends Model
 		}
 	}
 
-    
     /**
     * insert project details 
     * @param void
@@ -89,6 +88,17 @@ class Project extends Model
 
 
 	/**
+	*fetch all projects tagged non satisfactory by manager
+	*@param void
+	*@return projects | array
+	*/
+	public function getNotSatisfied()
+	{
+		return $this->_db->get($this->table, array('status', '=', 3))->results();
+	}
+
+
+	/**
 	*fetch all projects with bill of required materials not prepared
 	*@param void
 	*@return projects | array
@@ -97,7 +107,7 @@ class Project extends Model
 	{
 		$currentDate = date('Y-m-d');
 		//$currentDate = '2017-09-02';
-		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `date_begun`<='{$currentDate}'ORDER BY `name` ASC LIMIT 5")->results();
+		return $this->_db->select("SELECT $ FROM {$this->table} WHERE `status`=1 AND `date_begun`<='{$currentDate}'ORDER BY `name` ASC LIMIT 5")->results();
 	}
 
 	/**
@@ -120,6 +130,28 @@ class Project extends Model
 	{
 		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 1 ORDER BY `name` ASC")->results();
 	}
+
+
+	/**
+    * determine project ratings
+    * @param void
+    * @return array|int
+    */
+    public function getRatings()
+    {
+    	$total = count($this->get());
+    	$approved = count($this->getApproved());
+    	$notSatisfied = count($this->getNotSatisfied());
+    	$nonApproved = $total - ($approved + $notSatisfied);
+
+    	//convert to percentages
+    	$approved = ($approved/$total)*100;
+    	$notSatisfied = ($notSatisfied/$total)*100;
+    	$nonApproved = ($nonApproved/$total)*100;
+
+    	return array($approved, $notSatisfied, $nonApproved);
+    	
+    }
 
 
 	/**

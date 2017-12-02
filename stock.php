@@ -13,25 +13,27 @@
 <html>
  <head>
   <link rel="icon" type="image/x-icon" href="images/logo2.png">
-  <title>Dashboard</title>
+  <title>Stock | NMIS</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
   <link rel="stylesheet" href="css/w3.css">
   <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
   <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"> -->
-  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
   <style>
   html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   a{text-decoration: none;}
   .stock-content{
+
    /* background-image: url(images/background1.jpg);
     background-repeat: no-repeat;
     background-size: 100%; */
     background:#4ca1af;
     background:-webkit-linear-gradient(to right, #4ca1af,#c4e0e5);
     background:linear-gradient(to right, #4ca1af,#c4e0e5);
-    min-height: 500px;
+    min-height: 580px;
   }
   </style>
  </head>
@@ -48,15 +50,14 @@
 <div id="main-content" class="w3-main">
     <div class="w3-bar w3-grey w3-text-indigo" style="font-weight: bold;">
     <?php if($admin->role =='storekeeper'):?>
-     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('add-modal','tab');soundEffect('clicked')">Add Stock</a>
-     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('receive-modal','tab');soundEffect('clicked')">Receive Stock</a>
-     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('dispatch-modal','tab');soundEffect('clicked')" title="Issue materials from store to site">Dispatch Stock</a>
+     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('add-modal','tab')">Add Stock</a>
+     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('receive-modal','tab')">Receive Stock</a>
+     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('dispatch-modal','tab') " title="Issue materials from store to site">Dispatch Stock</a>
     <?php endif;?>
-     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('current-modal','tab'); soundEffect('clicked')">Current Stock</a>
+     <a href="#" id="tabs" class="w3-bar-item w3-button" onclick="openTab('current-modal','tab')">Current Stock</a>
   </div>
   <div class="stock-content">
      <!-- messaging board -->
-    <div class="msg-board">
       <?php if(Session::exist('R_SUCCESS')&&Session::get('R_SUCCESS')=='received'):?>
       <div id="msg-dialog" class="w3-card-4 w3-text-red w3-padding w3-center" style="margin-left: 70px;margin-right: 70px">
           <h3> details of materails have been submited for approval</h3>
@@ -81,20 +82,19 @@
       <div id="msg-dialog" class="w3-card-4 w3-text-red w3-padding w3-center" style="margin-left: 70px; margin-right: 70px">
           <h3>Dispatched items saved successfully</h3>
       </div>
-    </div>
+    
     <?php endif;?>
-    <?php Session::delete('R_SUCCESS');?><!-- disable success message -->
+    <?php Session::delete('R_SUCCESS');?><!-- disable  message -->
     <div class="w3-container">
-        <!--  Add materials form-->
+        <!--  New materials form-->
       <div id="add-modal" class="tab" style="display: none;">
-        <div class="menu-modal w3-modal-content w3-border w3-round">
-          <span id="p-close-btn" onclick="hideElement('add-modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+        <div class="w3-border w3-modal-content w3-round" style="margin-top: 30px;">
+          <span id="p-close-btn" onclick="hideElement('add-modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Add New Materials to Stock</h3>
           </div>
           <form id="add_form" class="w3-container" action="action_page.php" method="post" onsubmit="return validateNewMatForm()">
             <div class="w3-container w3-card-4 w3-round w3-margin-bottom w3-border-top w3-padding-16 w3-light-grey">
-              <input type="hidden" name="total_rows">
               <div class="w3-responsive">
                 <table class="w3-table-all">
                   <thead>
@@ -109,8 +109,8 @@
                    <?php for($x=0;$x<5;$x++):?>
                     <tr id="field_row_<?php echo $x;?>">
                       <td><input type="checkbox" name="checked_<?php echo $x;?>" value="checked" class="w3-check"></td>
-                      <td><input class="table-input" type="text" name="name_<?php echo $x;?>"></td>
-                      <td><input type="text" name="quantity_<?php echo $x;?>" class="table-input"></td>
+                      <td><input class="new-material table-input" type="text" name="name_<?php echo $x;?>"></td>
+                      <td><input type="number" class="table-input" name="quantity_<?php echo $x;?>"></td>
                       <td><input type="text" name="unit_<?php echo $x;?>" class="table-input"></td>
                     </tr>
                   <?php endfor;?>
@@ -132,8 +132,8 @@
       </div> 
           <!--  Received materials form-->
       <div id="receive-modal" class="tab" style="display: none;">
-        <div class="menu-modal w3-modal-content w3-border w3-round">
-          <span id="p-close-btn" onclick="hideElement('receive-modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+        <div class="w3-border w3-modal-content w3-round" style="margin-top: 30px;">
+          <span id="p-close-btn" onclick="hideElement('receive-modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Receive Materials for Store</h3>
           </div>
@@ -152,7 +152,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                  <?php for($x=0; $x<50;$x++):?>
+                  <?php for($x=0; $x<30;$x++):?>
                     <input type="hidden" name="COUNTER">
                     <tr id="field_row_<?php echo $x;?>">
                       <td><input type="checkbox" name="checked_<?php echo $x;?>"></td>
@@ -181,14 +181,13 @@
       </div> 
          <!--   materials issued out form-->
       <div id="dispatch-modal" class="tab" style="display: none;">
-        <div class="menu-modal w3-modal-content w3-border w3-round">
-          <span id="p-close-btn" onclick="hideElement('dispatch-modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+        <div class=" w3-border w3-modal-content w3-round" style="margin-top: 30px">
+          <span id="p-close-btn" onclick="hideElement('dispatch-modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Issuing Materials from Store to Site</h3>
           </div>
           <form id="dispatch_form" class="w3-container" action="action_page.php" method="post" onsubmit="">
             <div class="w3-container w3-card-4 w3-round w3-margin-bottom w3-border-top w3-padding-16 w3-light-grey">
-              <input type="hidden" name="total_rows">
               <label><b>Name of Project:</b></label>
                 <select name="project_id" class="w3-select w3-margin-bottom w3-border" required>
                   <option value="" class="w3-text-indigo">--Select project to issue materials against--</option>
@@ -249,7 +248,7 @@
       </div> 
          <!-- current stock-->
       <div id="current-modal" class="tab" style="display: none;">
-        <div class="menu-modal w3-modal-content w3-border w3-round w3-margin-bottom">
+        <div class="w3-border w3-modal-content w3-round w3-margin-bottom" style="margin-top: 30px;">
           <span id="p-close-btn" onclick="hideElement('current-modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Current Stock Levels</h3>
@@ -288,8 +287,8 @@
                         <input type="hidden" name="mat_id" value="<?php echo $material->id;?>">
                         <label><b>Name of Material<span class=" w3-text-red" title="This field is required">*</span></b></label><br>
                         <input type="text" name="name" value="<?php echo $material->name;?>" class="w3-input w3-margin-bottom w3-border" required><br>
-                        <label><b>Quantity Available<span class=" w3-text-red" title="This field is required">*</span></b></label><br>
-                        <input type="text" name="quantity" value="<?php echo $material->quantity;?>" class="w3-input w3-margin-bottom w3-border" required><br>
+                        <label><b>Quantity Available<span class="w3-text-red" title="This field is required">*</span></b></label><br>
+                        <input type="text" name="quantity" value="<?php echo $material->quantity;?>" class="w3-input w3-margin-bottom w3-border numberonly" required><br>
                         <label><b>Unit of Measurement</b></label><br>
                         <input type="text" name="unit" value="<?php echo $material->unit;?>" class="w3-input w3-margin-bottom w3-border">
                       </div>
@@ -309,29 +308,30 @@
         </div>
       </div> 
     </div>
+    <div class="w3-row-padding w3-margin-bottom">
+      <!-- require pop up dialog boxes here -->
+      <?php require_once'includes/pop_ups.php';?>
+   </div>
   </div>
-
-<!-- include the alert modals -->
-  <?php require_once'includes/pop_ups.php';?>
   <!-- End page content -->
 </div>
 
 <!-- audio file -->
 <audio id="clicked">
-     <source src="audio/mouseclick2.mp3" type="audio/mpeg">                     
+     <!-- <source src="audio/mouseclick2.mp3" type="audio/mpeg">       -->               
 </audio>
 <audio id="failed">
-     <source src="audio/bell.mp3" type="audio/mpeg">                   
+     <!-- <source src="audio/bell.mp3" type="audio/mpeg"> -->                   
 </audio>
 
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.min.js"></script>
 <script src="js/custom.js"></script>
 <script src="js/project_stock.js"></script>
-
+<script src="js/bootstrap.min.js"></script>
 <script>
 
-
+//materialExist();
   //background properties manipulation
 $(document).on('click', '#tabs', function(){
   $('.stock-content').css({"background":"white"});
@@ -346,6 +346,27 @@ $(document).on('click', '#p-close-btn', function(){
 })
 
 
+$(document).click(function() {
+  // toggle select button text for new materials
+  var checkedRows = $('#add_form :checked').length;
+  if(checkedRows == 5) {
+     $('#check').html('<b>Uncheck All</b>')
+     $('#add_form :text').attr('required', 'required')
+  } else {
+    $('#check').html('<b>Select All</b>');
+    $('#add_form :text').attr('required', null)
+  }
+
+  // toggle select button text for dispatched materials
+  var loadedMat = $('#dispatch_form :checkbox').length;
+  var selectedMat = $('#dispatch_form :checked').length;
+  //deduct 1 from total checked since the select element is included
+  if((selectedMat-1) == loadedMat) {
+     $('#check2').html('<b>Uncheck All</b>')
+  } else {
+    $('#check2').html('<b>Select All</b>');
+  }
+})
 
 </script>
 

@@ -1,5 +1,5 @@
 
-  <div class="w3-bar w3-top w3-card-4 w3-blue-grey w3-large" style="z-index:4">
+<div class="w3-bar w3-top w3-card-4 w3-blue-grey w3-large" style="z-index:4">
   <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-right" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
   <span class="w3-bar-item w3-left" style="cursor: pointer;"><img src="images/logo2.png" width="65" height="30" class="logo"> <span class="w3-hide-small"><?php echo Config::get('app/name');?></span></span>
 </div>
@@ -13,7 +13,7 @@
     </div>
     <div class="w3-col s9 w3-bar">
       <span><?php echo $admin->username; ?>, <strong><?php echo $admin->role?></strong></span><br>
-    <?php if (($admin->role == 'manager') && ($totalNotices!=0)):?>
+    <?php if (($admin->role == 'manager') && ($totalNotices!=0)):?> <!-- first condition -->
      <div class="w3-dropdown-hover">
       <button class="w3-button"><i class="fa fa-bell w3-text-indigo"></i><span class="w3-badge w3-right w3-small w3-red"><?php echo $totalNotices;?></span> </button>
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -35,7 +35,7 @@
       </div>
     <?php else:?>
       <a href="#" class="w3-bar-item w3-button" title="Notifications"><i class="fa fa-bell w3-text-indigo"></i><span class="w3-badge w3-right w3-small w3-red"></span></a>
-     <? endif;?>
+     <?php endif;?> <!-- first condition tail-->
       <a href="settings.php" class="w3-bar-item w3-button" title="Settings"><i class="fa fa-cog w3-text-indigo"></i></a>
       <a href="logout.php" class="w3-bar-item w3-button" title="Exit"><i class="fa fa-sign-out w3-text-indigo"></i></a>
     </div>

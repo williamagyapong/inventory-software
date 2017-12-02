@@ -1,6 +1,5 @@
 <?php
    require_once 'front_page_config.php';
-   $project = new Project();
    $projects = $project->get();
    $unbilledProjects = $project->getUnbilled();
    //print_array($project->getProjectMaterials(3));
@@ -11,7 +10,7 @@
 <html>
  <head>
   <link rel="icon" type="image/x-icon" href="images/logo2.png">
-  <title>Dashboard</title>
+  <title>Projects | NMIS</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"> -->
@@ -31,7 +30,7 @@
   .project-content{
     background-image: url(images/conimg1.jpg);
     background-repeat: no-repeat; 
-    min-height: 500px;
+    min-height: 580px;
   }
 
  
@@ -50,11 +49,11 @@
   <!-- menu bar -->
   <div class="w3-bar w3-grey w3-text-indigo" style="font-weight: bold;">
   <?php if($admin->role=='storekeeper'):?>
-     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('modal','tab'); soundEffect('clicked')" title="Registration">Register a project</button>
-     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('bill-modal','tab'); soundEffect('clicked')" title="Required Materials Bill">Prepare Materials Bill</button>
+     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('modal','tab')" title="Registration">Register a project</button>
+     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('bill-modal','tab')" title="Required Materials Bill">Prepare Materials Bill</button>
 
   <?php endif;?>
-     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('modal2','tab');soundEffect('clicked')">Current Projects<span class="w3-badge w3-right w3-small w3-teal"><?php echo count($projects);?></span></button>
+     <button id="tabs" class="w3-bar-item w3-button" onclick="openTab('modal2','tab')">Current Projects<span class="w3-badge w3-right w3-small w3-teal"><?php echo count($projects);?></span></button>
   </div>
   <div class="project-content">
 
@@ -72,8 +71,8 @@
     <div class="w3-container">
         <!-- modal for project registration -->
       <div id="modal" class="tab" style="display: none;">
-        <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
-          <span id="p-close-btn" onclick="hideElement('modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+        <div class="w3-border w3-round" style="margin-top: 30px; position: relative;">
+          <span id="p-close-btn" onclick="hideElement('modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Project Registration</h3>
           </div>
@@ -138,8 +137,8 @@
       </div> 
           <!--  Required materials Bill form-->
       <div id="bill-modal" class="tab" style="display: none;">
-        <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
-          <span id="p-close-btn" onclick="hideElement('bill-modal')" class="w3-button w3-xxlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+        <div class=" w3-border w3-modal-content w3-round " style="margin-top:30px;">
+          <span id="p-close-btn" onclick="hideElement('bill-modal')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Required Materials Bill</h3>
           </div>
@@ -147,7 +146,7 @@
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
               <input type="hidden" name="total_rows">
               <label><b>Name of Project:</b></label>
-                <select name="project_id" class="w3-select w3-margin-bottom w3-border" required>
+                <select name="project_id" class="w3-select w3-margin-bottom w3-border" autofocus required>
                   <option value=""></option>
                   <?php foreach($unbilledProjects as $thisProject):?>
                     <option value="<?php echo $thisProject->id;?>"><?php echo $thisProject->name;?></option>
@@ -165,12 +164,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                  <?php for($x=0; $x<50;$x++):?>
+                  <?php for($x=0; $x<15;$x++):?>
                     <input type="hidden" name="COUNTER">
                     <tr id="field_row_<?php echo $x;?>">
                       <td><input type="checkbox" name="checked_<?php echo $x;?>" disabled></td>
                       <td><input class="material table-input" type="text" name="name_<?php echo $x;?>" onblur="checkRow();"></td>
-                      <td><input type="number" name="quantity_<?php echo $x;?>" class="table-input" onblur="checkRow();autoFill()"></td>
+                      <td><input type="text" name="quantity_<?php echo $x;?>" class="table-input numberonly" onblur="checkRow();autoFill()"></td>
                       <td><input type="text" name="quantity_available_usable_<?php echo $x;?>" class="table-input" onblur="checkRow()" readonly></td>
                       <td><input type="text" name="quantity_to_purchase_<?php echo $x;?>" class="table-input" onblur="checkRow()" readonly></td>
                     </tr>
@@ -194,10 +193,10 @@
       </div> 
      <!-- modal for current projects -->
       <div id="modal2" class="tab" style="display: none;">
-        <div class="w3-modal-content w3-border w3-round " style="max-width:690px;margin-top: 30px;">
+        <div class="w3-border w3-round " style="margin-top: 30px; position: relative;">
 
           <div class="w3-center w3-light-blue"><br>
-            <span id="p-close-btn" onclick="openTab('modal2')" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+            <span id="p-close-btn" onclick="openTab('modal2')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
             <h3>Current Projects</h3>
           </div>
 
@@ -402,7 +401,7 @@
 
 <!-- audio file -->
 <audio id="clicked">
-     <source src="audio/mouseclick2.mp3" type="audio/mpeg">                     
+     <!-- <source src="audio/mouseclick2.mp3" type="audio/mpeg">   -->                   
 </audio>
 <!-- Include javascript -->
 

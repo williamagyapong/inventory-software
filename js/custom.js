@@ -1,5 +1,5 @@
  //determine user's browser
- <!--
+ //<!--
 var userAgent = navigator.userAgent;
 var opera = (userAgent.indexOf('Opera') != -1);
 var ie = (userAgent.indexOf('MSIE') != -1);
@@ -33,6 +33,15 @@ var body = document.getElementById('body');
          Consider using Chrome or Mozilla firefox.')
 //-->
 }
+
+
+//make form input accept only number values
+ jQuery('.numberonly').keyup(function () { 
+    if(this.value != this.value.replace(/[^0-9\.]/g,'')) {
+      this.value = this.value.replace(/[^0-9\.]/g,'')
+    }
+    //this.value = this.value.replace(/[^0-9\.]/g,'');
+});
  
 //prevent user from accessing the right click menu
 window.oncontextmenu = function() {
@@ -196,7 +205,7 @@ function updateProject(id, token, field='status') {
 function soundEffect(audioElement)
 {
    var audioFile = document.getElementById(audioElement);
-   audioFile.play();
+   //audioFile.play();
 }
 
 
@@ -208,8 +217,10 @@ function soundEffect(audioElement)
 function toggleFormRow(state='')
 {
     
-    //iterate through form elements
+    // iterate through form elements
+    // numMaterials is a global variable
     for(var i = 5; i<numMaterials; i++) {
+
           var fieldRow = document.getElementById('field_row_'+i);
           if(state ==='add_row') {
               if(fieldRow.style.display == 'none') {
@@ -284,6 +295,7 @@ function clearAlert(htmlElement)
  {
     
     var fieldsFilled = 0;
+    var duplicatedMat = 0;
  
     if(formElement['project_id'].value =='') {
         alert("Please select a project");
@@ -297,7 +309,28 @@ function clearAlert(htmlElement)
           (formElement['quantity_to_purchase_'+i].value !='')) {
            
           fieldsFilled++;
+        // check for material duplication
+        for(var x=0; x<numMaterials; x++) {
+            if(i == x) {
+              continue //skip the very material in question
+            }
+            //console.log(x)
+            if((formElement['name_'+i].value)==(formElement['name_'+x].value)) {
+                duplicatedMat++;
+            }
+
         }
+        }
+       
+    }
+
+    //pass duplication of materials alert
+    console.log(formElement['project_id'].value)
+    if(duplicatedMat>0) {
+       var alertBox = document.getElementById('alert');
+        alertBox.innerHTML = '<b>Please remove duplicated materials!</b>';
+        clearAlert(alertBox);
+      return false;//don't allow submission
     }
 
     if(fieldsFilled == 0) {
@@ -305,7 +338,7 @@ function clearAlert(htmlElement)
         alertBox.innerHTML = '<b>Please enter materials!</b>';
         clearAlert(alertBox);
       return false;//don't allow submission
-    } else {
+    }  else {
               var textStr = (fieldsFilled==1)?'material':'materials';
               var response = confirm('You are about to submit '+ fieldsFilled +' '+ textStr +' for approval');
               if(response) {
@@ -326,80 +359,104 @@ function validateNewMatForm()
 { 
   var formObj = document.getElementById('add_form');
   var alertBox = document.getElementById('add-alert');
+  var filledRows = 0;
+  var selectedNotFilled = 0;
+  var filledNotSelected = 0;
   for(var i = 0; i<5; i++)
   {
-    var tRow = document.getElementById('field_row_'+i);
     var name = formObj['name_'+i];
     var quantity = formObj['quantity_'+i];
     var checkBox = formObj['checked_'+i];
-    var unit = formObj['unit_'+i].value;
-    var rows = 0;
     // validate fields
     if(checkBox.checked && (name.value=='' || quantity.value=='')) {
-      alertBox.innerHTML = "<b>Please fill out all selected row fields</b>";
-      clearAlert(alertBox);
-      return false;
-    } else if(!checkBox.checked && (name.value!='' || quantity.value!='')) {
-      alertBox.innerHTML = "<b>Please select all filled rows</b>";
-      clearAlert(alertBox);
-      return false;
+      selectedNotFilled++;
+      
     }
-    else if(!checkBox.checked) {
-      alertBox.innerHTML = "<b>Please select a row and fill out details</b>";
-      clearAlert(alertBox);
-      return false;
-    } 
-    // get total field rows
-    if(checkBox.checked && (name.value!='') && (quantity.value=!'')) {
-       rows++;
+   if(!checkBox.checked && (name.value!='' || quantity.value!='')) {
+      filledNotSelected++;
+      
+    }
+   if(checkBox.checked && (name.value!='') && (quantity.value=!'')) {
+       filledRows++;
     }
 
-    if(rows !=0) {
-      return true;
+  }
+    //console.log(filledRows)
+    if(selectedNotFilled>0) {
+      alertBox.innerHTML = "<b>Please fill out all selected row fields or uncheck rows</b>";
+      clearAlert(alertBox);
+      return false;
     }
-    //alert(rows);
-  //return false;
+    
+    if(filledNotSelected>0) {
+      alertBox.innerHTML = "<b>Please select all filled rows or uncheck and clear contents</b>";
+      clearAlert(alertBox);
+      return false;
     }
+
+    if(filledRows==0) {
+        alertBox.innerHTML = "<b>Please select a row and fill out details</b>";
+        clearAlert(alertBox);
+        return false;
+    } else {
+              var textStr = (filledRows==1)?'material':'materials';
+              var response = confirm('You are about to add '+ filledRows +' new '+ textStr +' to stocks');
+              if(response) {
+                  return true;
+              } else {
+                  return false;
+              }
+    }
+    
 }
 
 
 function materialExist()
  {
-    
+  
     for(var i = 0; i<numMaterials; i++) {
-      var materialName = formElement['name_'+i].value;
-      
-      if(materialName !=='') {
-        var materialNameField = formElement['name_'+i];
-        
+      var materialName = formElement['name_'+i];
+      if(formElement['name_'+i].value !=='') {
+        //make request to the database for checks and addition
+        console.log('something')
+        return false;
+        $.post("action_page.php", {p_token:'check_material', term:materialName.value}, function(res){
+          console.log(materialName.value)
+          if(res!=1) {
+            alert( materialName.value + 'already exists in stock.');
+            
+          }
+        })
       }
 
     }
+    
     
  }
 
 
 
 /*
-* add non existing materials to stock while user fills materials bill
+* add non existing materials to stock while user fills out materials bill
+* numMaterials and formElement are global variable
 */
  function autoAddMaterial()
  {
     
     for(var i = 0; i<numMaterials; i++) {
       var materialName = formElement['name_'+i].value;
-      if(materialName !=='') {
+      if((materialName !=='')&&(formElement['checked_'+i].checked==false)) {
         //make request to the database for checks and addition
         $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
+          console.log(materialName)
           if(res!=1) {
-            var userRes = confirm('The material, '+ materialName + '\
-              does not exist. Click OK to add it or cancel otherwise.');
+            var userRes = confirm('The material, '+ materialName + 'does not exist. Click OK to add it or cancel otherwise.');
             if(userRes) {
               $.post("action_page.php", {p_token:'auto_add_material', term:materialName}, function(){
 
               })
             } else {
-              break;
+            
             }
           }
         })
@@ -412,6 +469,13 @@ function materialExist()
 
  /*
  * auto fill the quantity available and quantity to purchase 
+ * numMaterials is a globalavariable
+ | challenges: 
+ | 1. dificulty in uniquely referencing the current row being worked on by the user 
+ | solution: modify the condition
+ | 2. excess of material needed over material available criteria not working as required
+ |  solution: force the data type to integer value using the parseInt function
+ | 3. duplication of materials
  */
 
  function autoFill()
@@ -419,22 +483,25 @@ function materialExist()
     var materialName = '';
     for(var i = 0; i < numMaterials; i++) {
       materialName = formElement['name_'+i].value;
-      if(materialName !=='') {
+      if((materialName !=='') && (formElement['checked_'+i].checked ==false)) {
+        //initialize relevant variables
         var qtyNeeded = formElement['quantity_'+i].value;
         var qtyAvailableField = formElement['quantity_available_usable_'+i];
         var qtyToPurchField  = formElement['quantity_to_purchase_'+i];
         //make request to the database for checks and creation
         $.getJSON("action_page.php", {p_token:'get_material', term:materialName}, function(data){
           var qtyToPurch = 0;
-          if(qtyNeeded > data.quantity_available) {
-              qtyToPurch = qtyNeeded - data.quantity_available;
+          var qtyAvailable = parseInt(data.quantity_available);
+          //check for excess of material needed
+          if(qtyNeeded>qtyAvailable) {
+              qtyToPurch = qtyNeeded - qtyAvailable;
           }
           //populate various fields
           qtyAvailableField.value = data.quantity_available+' '+data.unit;
           qtyToPurchField.value = qtyToPurch+' '+data.unit;
           
         }).error(function(){
-          console.log('sorry, an error occurred')
+          console.log('sorry, an autofill error occurred')
         })
       }
 

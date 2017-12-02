@@ -51,6 +51,7 @@ class Material extends Model
 	*/
 	public function add($details=array())
 	{
+		//implement auto add
 		if(!empty($details))
 		{
 			if(!$this->exist($details[0]))
@@ -66,6 +67,7 @@ class Material extends Model
 				return false;
 			}
 		}
+		//add new materials manually
 		elseif(empty($details)) 
 		{
 			for($i=0; $i<5; $i++)
@@ -138,7 +140,7 @@ class Material extends Model
  	}
 
 	/**
-	*prepare bill of required materials
+	*receive materials for store
 	*@param void
 	*@return boolean
 	*/
@@ -148,7 +150,7 @@ class Material extends Model
 		$totalRows = 2;
 		//$projectId = Input::get('project_id');
 		$affectedRows = 0;
-		for($i = 0; $i<49; $i++)
+		for($i = 0; $i<30; $i++)
 		{
 			$name = Input::get('name_'.$i);
 			$quantity = Input::get('quantity_received_'.$i);
@@ -193,6 +195,12 @@ class Material extends Model
 		for($i = 0; $i<$totalRows; $i++)
 		{
 
+			/*$materialId = $this->get(Input('name_'.$i))->$id;
+			$row = $this->_db->select("SELECT * FROM {$this->table3} WHERE project_id={$projectId} AND material_id={$materialId}");
+			if(empty($row))
+			{
+
+			}*/
 			$query = $this->_db->insert($this->table3, [
 									    'project_id'=>$projectId,
 									    'quantity_needed'=>Input::get('quantity_'.$i),
@@ -205,7 +213,7 @@ class Material extends Model
 		}
 
 		if($rowsInserted==$totalRows) {//update the projects table
-			if($this->_db->update($this->table, ['bill_saved'=>0], $projectId)) {
+			if($this->_db->update($this->table, ['bill_status'=>0], $projectId)) {
 				return true;
 			}
 			
@@ -222,7 +230,7 @@ class Material extends Model
 	public function saveDispatchedItems()
 	{
 		$receivingOfficer = json_encode(array('name'=>ucfirst(Input::get('receive_officer_name')), 'position'=>ucfirst(Input::get('receive_officer_pos'))));
-		$totalRows = Input::get('total_mat');
+		$totalRows = Input::get('total_mat');//stored at loading time
 
 		for($i = 1; $i<= $totalRows; $i++)
 		{
