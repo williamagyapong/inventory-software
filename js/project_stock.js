@@ -20,7 +20,9 @@ $(document).ready(function(){
        var matObj = $(this);
        //make request to the database for checks and addition
        if(materialName =='') {
-           alert('Please enter a material name')//use custom dialog for this
+           //alert('Please enter a material name')//use custom dialog for this
+           $('#alert_content').html('<b>Please enter a material name');
+           showElement('alert-modal');
            //matObj.removeClass('material')
        } else {
             $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
@@ -32,7 +34,7 @@ $(document).ready(function(){
                  });
               } else {
                   matObj.val('');
-                  matObj.attr('autofocus', 'autofocus');
+                  matObj.prop('autofocus', 'autofocus');
           
                   //break;
               }
@@ -42,7 +44,7 @@ $(document).ready(function(){
         
        
     })
-})
+
 
 //check whether material already exist
 $('.new-material').blur(function() {
@@ -50,12 +52,16 @@ $('.new-material').blur(function() {
        var matObject = $(this);
        //make request to the database for checks and addition
        if(materialName =='') {
-           alert('Please enter a material name')//use custom dialog for this
+           //alert('Please enter a material name')//use custom dialog for this
+           $('#alert_content').html('<b>Please enter a material name');
+           showElement('alert-modal');
            //matObj.removeClass('material')
        } else {
             $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
             if(res==1) {
-               alert(materialName+' is already in stock.');
+               //alert(materialName+' is already in stock.');
+               $('#alert_content').html('<b>'+materialName+' is already in stock');
+               showElement('alert-modal');
               
                  matObject.val('');
           }
@@ -99,4 +105,67 @@ $('.delete').click(function(){
         
       }
     })
-})
+  })
+
+//registration validation
+    $('#registration_form').submit(function(){
+       var pManagerPhoneObject = $('#registration_form input[name="project_manager_phone"]');
+       var adminPhoneObject = $('#registration_form input[name="stores_admin_phone"]');
+       var pManagerPhone = pManagerPhoneObject.val();
+       var adminPhone = adminPhoneObject.val();
+
+        if((adminPhone[0] != 0) || (pManagerPhone[0] != 0)) {
+          //ensure the phone number begins with a zero
+          $('#alert_content').html('<b>Please enter a valid phone number</b>');
+             showElement('alert-modal');
+              if((adminPhone[0] != 0) || (pManagerPhone[0] == 0)) {
+                  //adminPhoneObject.addClass('w3-red');
+              } else if((adminPhone[0] == 0) || (pManagerPhone[0] != 0)) {
+                  pManagerPhoneObject.addClass('w3-red');
+              }
+             
+             return false;
+        } 
+        else
+        {
+            if((adminPhone.length != 10) && (pManagerPhone.length != 10)) {
+
+             $('#alert_content').html('<b>Please enter a valid phone number</b>');
+             showElement('alert-modal');
+             adminPhoneObject.addClass('w3-red');
+             pManagerPhoneObject.addClass('w3-red');
+             return false;
+
+          } else if((adminPhone.length == 10) && (pManagerPhone.length != 10)){
+
+              $('#alert_content').html('<b>Please enter a valid phone number in the project manager field</b>');
+             showElement('alert-modal');
+             pManagerPhoneObject.addClass('w3-red');
+             return false;
+
+          } else if((adminPhone.length != 10) && (pManagerPhone.length == 10)){
+
+              $('#alert_content').html('<b>Please enter a valid phone number in the stores administrator field</b>');
+             showElement('alert-modal');
+             adminPhoneObject.addClass('w3-red');
+             return false;
+          } else{
+              return true;
+          }
+        }
+        
+    })
+    
+    //change background color to default after validation
+    $('#registration_form input[name="project_manager_phone"]').focus(function(){
+        $(this).removeClass('w3-red');
+    })
+
+    $('#registration_form input[name="stores_admin_phone"]').focus(function(){
+        $(this).removeClass('w3-red');
+    })
+
+
+    
+
+})//document ready function ends here

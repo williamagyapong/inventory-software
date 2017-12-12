@@ -76,7 +76,7 @@
           <div class="w3-center"><br>
              <h3 class="w3-text-red">Project Registration</h3>
           </div>
-          <form class="w3-container" action="action_page.php" method="post">
+          <form id="registration_form" class="w3-container" action="action_page.php" method="post">
             <div class="w3-section">
              <fieldset class="w3-light-grey">
               <div class="w3-half">
@@ -112,7 +112,7 @@
                 </div>
                 <div class="w3-half">
                   <label><b>Phone</b></label>
-                  <input class="w3-input w3-border w3-margin-bottom w3-blue-grey" type="text" name="project_manager_phone" required="required">
+                  <input class="w3-input w3-border w3-margin-bottom w3-blue-grey numberonly" type="text" name="project_manager_phone" required="required" autocomplete="off">
                 </div>
               </fieldset>
               <fieldset class="w3-light-grey">
@@ -123,7 +123,7 @@
                 </div>
                 <div class="w3-half">
                   <label><b>Phone</b></label>
-                  <input class="w3-input w3-border w3-margin-bottom w3-blue-grey" type="text" name="stores_admin_phone" required="required">
+                  <input class="w3-input w3-border w3-margin-bottom w3-blue-grey numberonly" type="text" name="stores_admin_phone" required="required" autocomplete="off">
                 </div>
               </fieldset>
               <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
@@ -196,7 +196,7 @@
         <div class="w3-border w3-round " style="margin-top: 30px; position: relative;">
 
           <div class="w3-center w3-light-blue"><br>
-            <span id="p-close-btn" onclick="openTab('modal2')" class="fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal"></span>
+            <span id="p-close-btn" onclick="openTab('modal2')" class="fa fa-times w3-button w3-xlarge w3-text-white w3-hover-red w3-display-topright" title="Close Modal"></span>
             <h3>Current Projects</h3>
           </div>
 
@@ -206,6 +206,7 @@
                <th>ID</th>
                <th>Project Name</th>
                <th>Project Status</th>
+               <th>Materials Bill Status</th>
                <th>Action</th>
               </tr>
               <?php $ID = 0;?>
@@ -223,6 +224,9 @@
                   <?php echo $project->displayStatus($admin->role, $nProject->id);?>
                 </td>
                 <td>
+                  <?php echo $project->displayBillStatus($admin->role, $nProject->id);?>
+                </td>
+                <td>
                  <a href="#" class="w3-button w3-text-teal w3-large" onclick="<?php echo "openTab('div".$nProject->id."')";?>;soundEffect('clicked')"><?php echo (($nProject->status==3)&&($admin->role=='storekeeper'))?'<i class="fa fa-pencil"></i>&nbsp;Edit':'<i class="fa fa-toggle-down"></i>&nbsp;View';?></a>
                 </td>
               </tr>
@@ -231,7 +235,7 @@
                   <div id="div<?php echo $nProject->id;?>" class="tabs w3-light-grey w3-card-4" style="display: none;" >
                     <?php $thisProject = $project->get($nProject->id)?>
                       <div class="w3-section">
-                       <span onclick="<?php echo "hideElement('div".$nProject->id."')";?>" class="w3-button w3-large w3-hover-red" title="Close">&times;</span>
+                       <span onclick="<?php echo "hideElement('div".$nProject->id."')";?>" class="fa fa-times w3-button w3-large w3-hover-red" title="Close"></span>
                       <?php if(($nProject->status==3)&&($admin->role=='storekeeper')):?>
                         <!-- provide editable project details -->
                         <form class="w3-container" action="action_page.php" method="post">
@@ -411,26 +415,24 @@
 <script src="js/project_stock.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script>
+  $(document).ready(function(){
+        //background properties manipulation
+    $(document).on('click', '#tabs', function(){
+      $('.project-content').css({"background":"white"});
+      //$(this).css({"background":"white"});
+    })
 
+    $(document).on('click', '#p-close-btn', function(){
 
+      $('.project-content').css({"background-image":"url(images/conimg1.jpg)",
+            "background-size":"100%","background-repeat":"no-repeat"
+         });
+      
+    })
 
-
-//background properties manipulation
-$(document).on('click', '#tabs', function(){
-  $('.project-content').css({"background":"white"});
-  //$(this).css({"background":"white"});
-})
-
-$(document).on('click', '#p-close-btn', function(){
-
-  $('.project-content').css({"background-image":"url(images/conimg1.jpg)",
-        "background-size":"100%","background-repeat":"no-repeat"
-     });
-  
-})
-
-
-
+        
+        
+  })
 </script>
 
 </body>

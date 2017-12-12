@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="icon" type="image/x-icon" href="images/logo2.png">
-	<title>error 404 | busrecords</title>
+	<title>error 404 | NMIS</title>
 	<link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="styles/main.css">
 

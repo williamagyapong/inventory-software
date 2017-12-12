@@ -11,8 +11,8 @@
     Redirect::to('index.php');//user authentication
  }
  $project = new Project();
+ $materialObject = new Material();
  $admin = $user->data();
- 
  
 
 
@@ -28,6 +28,10 @@ $numBillReminders = 0;
 $numReminders = $numBillReminders + $numProjectReminders;
 $totalNotices = $numProjects + $numBills + $numReminders;
 
+//initialize storekeeper message variables
+$storekeeperMsg = Notification::getStorekeeperMsg();
+
+$totalMessages = count($storekeeperMsg);
 //get reminders
 $reminders = count(DBHandler::getInstance()->get('projects', array('status','=',2))->results());
 //if(empty($projectsForApproval)) die();

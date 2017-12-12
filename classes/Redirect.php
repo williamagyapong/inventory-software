@@ -18,6 +18,12 @@ class Redirect
 					 	exit();
 					break;
 
+					case 503:
+					 	header('HTTP/1.0 503 FAILURE');
+					 	include 'includes/errors/503.php';
+					 	exit();
+					break;
+
 					case 401:
 					 	header('HTTP/1.0 401 SYSTEM FAILURE');
 					 	include 'includes/errors/401.html';

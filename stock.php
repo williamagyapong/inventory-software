@@ -2,7 +2,7 @@
  require_once 'front_page_config.php';
  $project = new Project();
  $matObject = new Material();
- $billedProjects = $project->getBilled();
+ $billedProjects = $project->getActiveProjects();
  $matNum = 0;
  //print_array($matObject->getProjectMaterials(6));
 
@@ -280,7 +280,7 @@
                     <header class="w3-container w3-blue"> 
                       <span onclick="<?php echo "hideElement('edit-stock-modal-".$matNum."')";?>" 
                       class="fa fa-times w3-button w3-hover-red w3-display-topright w3-xlarge"></span>
-                      <h3><i class="fa fa-pencil w3-text-orange"></i>&nbsp; Editing <span class="fa fa-arrow-right"></span><span class="w3-text-orange"><?php echo $material->name;?></span></h3>
+                      <h3><i class="fa fa-pencil w3-text-orange"></i>&nbsp; Editing <span class="fa fa-arrow-right"></span>&nbsp;<span class="w3-text-orange"><?php echo $material->name;?></span></h3>
                     </header>
                     <form action="action_page.php" method="post" >
                       <div class="w3-container w3-margin-left w3-padding">

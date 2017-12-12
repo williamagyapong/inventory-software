@@ -69,15 +69,19 @@ if(Input::exist('p_token'))
 	{
 		case 'remind_later':
 			$project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'));
-			Session::put(Input::get('p_token'), Input::get('projectId'));
+			//Session::put(Input::get('p_token'), Input::get('projectId'));
 		break;
 		
 		case 'satisfied':
-			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'))) {
-				Redirect::to('dashboard.php');
+			if($project->updateStatus(Input::get('p_token'),Input::get('project_id'),Input::get('field_name'))) {
+				//delete sessions after approving bills
+                Session::delete('SHOW_PROJECT_BILL'); 
+                Session::delete('APPROVE_PROJECT_BILL'); 
+
+				Redirect::to('dashboard.php');//take user to the dashboard
 			} else {
 				//trigger error message
-				Redirect::to(502);
+				Redirect::to(503);
 			}
 		break;
 		case 'notsatisfied':
@@ -90,38 +94,59 @@ if(Input::exist('p_token'))
 			
 		break;
 		case 'print':
-			if($project->updateStatus(Input::get('p_token'),Input::get('projectId'),Input::get('field_name'))) {
-				if(Input::get('field_name')=='bill_status') {
-					Session::put('BILL_ID', Input::get('projectId'));
-				} else {
-
-						Session::put('PROJECT_ID', Input::get('projectId'));
-				}
-				Redirect::to('print.php');//redirect for printing
+			if($project->updateStatus(Input::get('p_token'),Input::get('project_id'),Input::get('field_name'))) {
+				if(Input::get('field_name')=='status') {
+					//store project id for printing
+					Session::put('PROJECT_ID', Input::get('project_id'));
+					
+				} 
 
 			} else {
-				Redirect::to(502);//trigger error message
+				Redirect::to(503);//trigger error message
 			}
 	    break;
+
 	    case 'print_project_session':
 	    	Session::put('PRINT_PROJECT', TRUE);//set this token to control display on show_project page
 	    break;
+
+	    case 'print_bill_session':
+	        if(Input::get('project_id') !=0) {
+	        	Session::put('SHOW_PROJECT_BILL', TRUE);
+	        	Session::put('PRINT_PROJECT_BILL', Input::get('project_id'));//set this token to control display on show_project page
+	        }
+	    	
+	    break;
+	    //for displaying bill details for approval only
+	    case 'show_bill_session':
+	        if(Input::get('project_id') !=0) {
+	        	Session::put('SHOW_PROJECT_BILL', TRUE);
+	        	Session::put('APPROVE_PROJECT_BILL', Input::get('project_id'));//set this token to control display on show_project page
+	        }
+	    	
+	    break;
+
+	    case 'clear_project_session':
+	    	Session::delete('PRINT_PROJECT');//clear this token to control display on show_project page
+	    break;
+
 	    case 'submit_bill':
 			if($matObject->prepareBill()) {
 				Session::put('R_SUCCESS', 'bill');
 				Redirect::to('project.php');
 			} else {
 				//trigger error message
-				Redirect::to(502);
+				Redirect::to(503);
 			}
 	    break;
+
 	    case 'receive':
 			if($matObject->receive()) {
 				Session::put('R_SUCCESS', 'received');
 				Redirect::to('stock.php');
 			} else {
 				//trigger error message
-				Redirect::to(502);
+				Redirect::to(503);
 			}
 		case 'dispatch':
 			 if($matObject->saveDispatchedItems()) {
@@ -182,6 +207,7 @@ if(Input::exist('p_token','get'))
 		case 'reminded':
 		     $project->displayReminded();
 			break;
+
 		case 'get_material':
 	         $data = [];
 	    	 $material = $matObject->get(Input::get('term'));
@@ -189,6 +215,14 @@ if(Input::exist('p_token','get'))
 	    	 $data['unit'] = $material->unit;
 	    	 echo json_encode($data);
 	    	break;
+
+	    case 'correct_project_reg':
+		     $project->displayNonSatisfactoryProject(Input::get('item_id'));
+			break;
+
+		case 'correct_mat_bill':
+		     $matObject->displayNonSatisfactoryMatBill(Input::get('item_id'));
+			break;
 		default:
 			# code...
 			break;

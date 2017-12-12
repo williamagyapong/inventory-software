@@ -4,8 +4,8 @@
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round-large" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('nmodal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
-        <h2>Project Approval</h2>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
+        <h3>Approve Project</h3>
       </header>
 
       <div class="w3-container w3-text-red w3-large w3-bold">
@@ -14,10 +14,10 @@
 
       <footer class="w3-container w3-light-grey">
        <div class="w3-right">
-        <a href="show.php" class="w3-button">Show</a>
-        <button class="w3-button" onclick="hideElement('nmodal');setSession('print_project_session')">Print</button>
+        <a href="show.php" class="my-button w3-button" onclick="clearSession('clear_project_session')"><i class="fa fa-eye bold w3-text-orange"></i> Show</a>
+        <button class="my-button w3-button" onclick="hideElement('nmodal');setSession('print_project_session')"><i class="fa fa-print bold w3-text-orange"></i> Print</button>
         <?php 
-         echo "<a href=\"#\" class=\"w3-button\" onclick=\"hideElement('nmodal');updateProject('".$projectsForApproval[0]->id."','remind_later')\">Remind Me Later</a>"
+         echo "<a href=\"#\" class=\"my-button w3-button\" onclick=\"hideElement('nmodal');updateProject('".$projectsForApproval[0]->id."','remind_later')\"><i class=\"fa fa-thumb-tack bold w3-text-orange\"></i> Remind Me Later</a>"
         
         ?>
        </div>
@@ -31,8 +31,8 @@
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round-large" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('nbillmodal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
-        <h2>Required Materials Bill Approval</h2>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
+        <h3>Approve Materials Bill</h3>
       </header>
 
       <div class="w3-container w3-text-red w3-large w3-bold">
@@ -41,10 +41,13 @@
 
       <footer class="w3-container w3-light-grey">
        <div class="w3-right">
-        <a href="show.php?bill=<?php echo sha1(md5($billsForApproval[0]->id));?>" class="w3-button">Show</a>
-        <a href="show.php?print&bill=<?php echo sha1(md5($billsForApproval[0]->id));?>" class="w3-button" onclick="hideElement('nbillmodal');setSession('print_bill_session')">Print</a>
-        <?php 
-         echo "<a href=\"#\" class=\"w3-button\" onclick=\"hideElement('nbillmodal');updateProject('".$billsForApproval[0]->id."','remind_later','bill_status')\">Remind Me Later</a>"
+      <?php
+        echo "
+        <a href=\"#\" class=\"my-button w3-button\" onclick=\"hideElement('nbillmodal');setSession('show_bill_session','".$billsForApproval[0]->id."')\"><i class=\"fa fa-eye bold w3-text-orange\"></i> Show</a>";
+        echo "
+        <a href=\"#\" class=\"my-button w3-button\" onclick=\"hideElement('nbillmodal');setSession('print_bill_session','".$billsForApproval[0]->id."')\"><i class=\"fa fa-print bold w3-text-orange\"></i> Print</a>";
+      
+         echo "<a href=\"#\" class=\"my-button w3-button\" onclick=\"hideElement('nbillmodal');updateProject('".$billsForApproval[0]->id."','remind_later','bill_status')\"><i class=\"fa fa-thumb-tack bold w3-text-orange\"></i> Remind Me Later</a>"
         ?>
        </div>
       </footer>
@@ -57,7 +60,7 @@
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('rmodal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
         <h3>Project Approval Reminder</h3>
       </header>
 
@@ -66,8 +69,8 @@
       </div>
       <footer class="w3-container w3-light-grey">
        <div class="w3-right">
-        <button class="w3-button" onclick="document.getElementById('rmodal').style.display='none';loadElement('reminded', 'reminded')">Show</button>
-        <button class="w3-button" onclick="hideElement('rmodal')">Cancel</button>
+        <button class="my-button w3-button" onclick="document.getElementById('rmodal').style.display='none';loadElement('reminded', 'reminded')"><i class="fa fa-eye bold w3-text-orange"></i> Show</button>
+        <button class="my-button w3-button" onclick="hideElement('rmodal')"><i class="fa fa-remove bold w3-text-red"></i> Cancel</button>
        </div>
       </footer>
     </div>
@@ -78,7 +81,7 @@
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('notsatisfied-modal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
         <h3>Registration Dissatisfaction Note</h3>
       </header>
       <form action="action_page.php" method="post">
@@ -105,7 +108,7 @@
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('notsatisfied-bill-modal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
         <h3>Bill Dissatisfaction Note</h3>
       </header>
       <form action="action_page.php" method="post">
@@ -128,11 +131,11 @@
     </div>
   </div>
                <!-- Reconciliation dialog box -->
-   <div id="reconcile-modal" class="w3-modal">
+  <div id="reconcile-modal" class="w3-modal">
     <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
       <header class="w3-container w3-blue"> 
         <span onclick="hideElement('reconcile-modal')" 
-        class="w3-button w3-hover-red w3-display-topright w3-xlarge">&times;</span>
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
         <h3>Registration Reconciliation</h3>
       </header>
       <form action="action_page.php" method="post">
@@ -180,4 +183,112 @@
       </footer>
     </div>
    </div>
+         <!-- storekeeper messages board -->
+   <div id="storekeeper_msg_modal" class="w3-modal w3-round">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:800px">
+      <header class="w3-container w3-blue"> 
+        <span onclick="hideElement('storekeeper_msg_modal')" 
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
+        <h3 style="display: inline;"><i class="fa fa-envelope"></i> Messages Board</h3>
+      </header>
+      <div class="w3-container w3-large w3-bold w3-padding-left w3-margin-bottom">
+        <div class="w3-responsive">
+          <table class="w3-table w3-bordered">
+            <tr>
+              <th class="w3-center">#</th>
+              <th class="w3-center">Message Type</th>
+              <th class="w3-center">Message Body</th>
+              <th class="w3-center">Action</th>
+            </tr>
+            <?php 
+              $counter = 0;
+            foreach($storekeeperMsg as $message):;
+            ?>
+            <tr>
+              <td><?php echo ++$counter; ?></td>
+              <td><?php echo ($message->status==3)?'Project registration':'Materials Bill'; ?></td>
+              <td class="w3-center">
+                <textarea rows="" cols="35" readonly="readonly" class="w3-text-indigo w3-padding"><?php echo $message->d_notes;?></textarea>
+              </td>
+              <td>
+                <?php if($message->status==3):?>
+                  <button class="my-button" onclick="<?php echo "loadElement('storekeeper_edit_board', 'correct_project_reg', '".$message->id."')";?>; showElement('storekeeper-edit-modal')">Effect Change</button>
+                <?php else:?>
+                  <button class="my-button" onclick="<?php echo "loadElement('storekeeper_edit_board', 'correct_mat_bill', '".$message->id."')";?>; showElement('storekeeper-edit-modal')">Effect Change</button>
+                <?php endif;?>
+              </td>
+            </tr>
+           <?php endforeach;?>
+        </table>
+        </div>
+      </div>
+      <footer class="w3-container w3-light-grey" style="height: 40px;">
+       <div class="w3-right">
+        
+       </div>
+      </footer>
+    </div>
+   </div>
+             <!--Storekeeper editing board -->
+  <div id="storekeeper-edit-modal" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-top w3-round" style="max-width:700px">
+      <header class="w3-container w3-blue"> 
+        <span onclick="hideElement('storekeeper-edit-modal')" 
+        class="fa fa-times w3-button w3-hover-red w3-display-topright w3-large" title="Close"></span>
+        <h3><i class="fa fa-edit w3-text-orange"></i> Editing Board</h3>
+      </header>
+      <div id="storekeeper_edit_board">
+         
+      </div>
+      <footer class="w3-container w3-light-grey" style="height: 40px;">
+       <div class="w3-right">
+        
+       </div>
+      </footer>
+    </div>
+  </div>
+        <!-- Generic alert modal -->
+  <div id="alert-modal" class="w3-modal w3-round">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
+      <header class="w3-container w3-blue"> 
+        <h3 style="display: inline;">Alert</h3>
+      </header>
+
+      <div class="w3-container w3-large w3-bold w3-padding-left">
+        
+         <p class="w3-padding w3-left"><img src="images/warning.png" width="50" height="40"></p>
+        <p id="alert_content" class="w3-margin-top w3-text-red">
+         
+        </p>
+      </div>
+      <footer class="w3-container w3-light-grey">
+       <div class="w3-right">
+        <button class="w3-button my-button" onclick="hideElement('alert-modal')"><b>OK</b></button>
+       </div>
+      </footer>
+    </div>
+   </div>
+         <!-- Generic prompt modal -->
+  <div id="prompt-modal" class="w3-modal w3-round">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom w3-round" style="max-width:600px">
+      <header class="w3-container w3-blue"> 
+        <h3 style="display: inline;">Alert</h3>
+      </header>
+
+      <div class="w3-container w3-large w3-bold w3-padding-left">
+        
+         <p class="w3-padding w3-left"><img src="images/warning.png" width="50" height="40"></p>
+        <p id="prompt_content" class="w3-margin-top w3-text-red">
+         
+        </p>
+      </div>
+      <footer class="w3-container w3-light-grey">
+       <div class="w3-right">
+        <button class="w3-button my-button" onclick="hideElement('prompt-modal')"><b>OK</b></button>
+       </div>
+      </footer>
+    </div>
+   </div>
+
+
      

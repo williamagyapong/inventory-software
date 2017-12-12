@@ -33,4 +33,38 @@ class Model
 		return $this->_db->select($sql)->results();
 	}
 
+
+	/**
+	*fetch all projects with bill of required materials not prepared
+	*@param void
+	*@return projects | array
+	*/
+	public function getUnbilled()
+	{
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 'none' ORDER BY `name` ASC")->results();
+	}
+    
+
+	/**
+	*fetch all projects with approved bill of materials
+	*@param void
+	*@return projects | array
+	*/
+	public function getbilled()
+	{
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` != 'none' ORDER BY `name` ASC")->results();
+	}
+
+	/**
+	*fetch all projects with approved bill of materials
+	*@param void
+	*@return projects | array
+	*/
+	public function getActiveProjects()
+	{
+		//think about more appropriate method name
+		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status`=1 ORDER BY `name` ASC")->results();
+	}
+
+
 }

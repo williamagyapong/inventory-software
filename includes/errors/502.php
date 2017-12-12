@@ -13,13 +13,13 @@
      <div class="row">
       <br><br><br>
        <div class="jumbotron">
-        <h2>ERROR 502| Registration errors</h2>
+        <h2><u>ERROR 502| Registration errors</u></h2>
          <p>
           <?php foreach(Session::get('R_ERRORS') as $error) {
              echo "<li>$error</li>";
           }
             ?>
-           <a href="project.php" class="btn btn-default" style="display: inline; text-decoration: none;color: blue; font-weight: bolder;">Try again </a>
+           &nbsp;&nbsp;<a href="project.php" class="btn btn-default" style="display: inline; text-decoration: none;color: blue; font-weight: bolder;">Try again </a>
             </p><hr>
        </div>
           
@@ -31,7 +31,7 @@
   	  <br><br><br>
   	   <div class="jumbotron">
   	   	 <p>
-	        Sorry, an error occurred while submitting registration dissatisfaction notes<a href="dashboard.php" class="btn btn-default" style="display: inline; text-decoration: none;color: blue; font-weight: bolder;">Try again </a>
+	        Sorry, an error occurred while submitting registration dissatisfaction notes &nbsp;&nbsp;<a href="dashboard.php" class="btn btn-default" style="display: inline; text-decoration: none;color: blue; font-weight: bolder;">Try again </a>
             </p><hr>
   	   </div>
   	 	    

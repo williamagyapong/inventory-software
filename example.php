@@ -1,3 +1,5 @@
+
+<a href="show.php?print&bill=<?php echo sha1(md5($billsForApproval[0]->id));?>" class="my-button w3-button" onclick="hideElement('nbillmodal');setSession('print_bill_session',)"><i class="fa fa-print bold w3-text-orange"></i> Print</a>
 <?php
  require_once 'core/init.php';
  $mat = new Material();

@@ -70,7 +70,30 @@ spl_autoload_register(function($class_name){
 // access functions
 require_once 'functions.php';
 
-$p = new Project();
-//print_array($p->getInProgress());exit();
+
+/**
+|---------------------------------------------
+|      SYSTEM CONVENTIONS
+|---------------------------------------------
+  <> Project/Materials Bill Status Conventions <>
+  1. 0 -> Newly registered project / prepared materials bill pending approval
+  2. 1 -> Approved project or materials bill
+  3. 2 -> Project/mat. bill on reminder / on storekeeper interface it represents project pending approval
+  4. 3 -> Project/ materials bill marked as non-satisfactory
+  5. none -> Indicates a project with no materials bill
+
+  <> General Conventions <>
+  1.
+  2.
+  3.
+  
+  <> Error Codes <>
+  1. 
+  2. 
+  3. 
+
+*/
+
+
 
 ?>

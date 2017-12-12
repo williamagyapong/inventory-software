@@ -1,8 +1,20 @@
 <?php
  require_once 'front_page_config.php';
 
- list($approved, $nonSatisfactory, $awaiting) = $project->getRatings();
- 
+ list($total, $approved, $nonSatisfactory, $awaiting) = $project->getRatings();
+ list($totalBills, $approvedBills, $nonSatisfactoryBills, $awaitingBills) = $materialObject->getBillsRatings();
+ //clear printing session variables
+ if(Input::exist('pp','get')) //pp for print project
+  {
+    Session::delete('PROJECT_ID');
+    Session::delete('PRINT_PROJECT');
+
+  }elseif(Input::exist('pb', 'get'))//pb for print bill
+  {
+    Session::delete('SHOW_PROJECT_BILL');
+    Session::delete('PRINT_PROJECT_BILL');
+  }
+ //print_array($_SESSION);
 ?>
 
 <!-- front end matter -->
@@ -35,7 +47,8 @@
   <!-- Header -->
   <nav class="w3-bar w3-grey w3-text-indigo" style="position: fixed; font-weight: bold;">
     <a href="#c-levels" id="tabs" class="w3-bar-item w3-button">Completion Levels</a>
-    <a href="#classify" id="tabs" class="w3-bar-item w3-button">Classifications</a>
+    <a href="#classify" id="tabs" class="w3-bar-item w3-button">Project Classifications</a>
+    <a href="#classify_bill" id="tabs" class="w3-bar-item w3-button">Bills Classifications</a>
   </nav>
   <!-- load reminded/to-be-printed projects here -->
   <div id="reminded"> </div>
@@ -52,12 +65,13 @@
     
     <div id="c-levels" class="w3-card-4 w3-padding">
       <h3 class="w3-text-grey">Projects Completion Levels</h3>
-      <!-- canvas for chart -->
+      <!-- Chart area: canvas for chart -->
       <canvas id="chart" width="250" height="110"></canvas>
     </div>
+    <!-- project classifications -->
     <div id="classify" class="w3-card-4 w3-padding" style="margin-top: 25px;">
       <h3 class="w3-text-grey">Project Classifications</h3>
-      <p>Non satisfactory Project Registration</p>
+      <p>Non satisfactory Project Registration (<span class="w3-text-red"><?php echo round(($total*$nonSatisfactory/100))." out of ".$total;?></span>)</p>
       <div class="w3-grey">
         <?php if($nonSatisfactory==0):?>
           <div class="w3-container w3-center w3-padding" style="width:<?php echo $nonSatisfactory;?>%"><?php echo $nonSatisfactory;?>%</div>
@@ -66,7 +80,7 @@
         <?php endif;?>
       </div>
 
-      <p>Approved Projects</p>
+      <p>Approved Projects (<span class="w3-text-red"><?php echo round(($total*$approved/100))." out of ".$total;?></span>)</p>
       <div class="w3-grey">
         <?php if($approved==0):?>
           <div class="w3-container w3-center w3-padding" style="width:<?php echo $approved;?>%"><?php echo $approved;?>%</div>
@@ -75,12 +89,42 @@
         <?php endif;?>
       </div>
 
-      <p>Projects Awaiting Approval</p>
+      <p>Projects Awaiting Approval (<span class="w3-text-red"><?php echo round(($total*$awaiting/100))." out of ".$total;?></span>)</p>
       <div class="w3-grey">
         <?php if($awaiting==0):?>
           <div class="w3-container w3-center w3-padding" style="width:<?php echo $awaiting;?>%"><?php echo $awaiting;?>%</div>
         <?php else:?>
           <div class="w3-container w3-center w3-padding w3-orange" style="width:<?php echo $awaiting;?>%"><?php echo $awaiting;?>%</div>
+        <?php endif;?>
+      </div>
+    </div>
+    <!-- Materials bills classifcation -->
+    <div id="classify_bill" class="w3-card-4 w3-padding" style="margin-top: 25px;">
+      <h3 class="w3-text-grey">Materials Bills Classifications</h3>
+      <p>Non satisfactory Materials Bills (<span class="w3-text-red"><?php echo round(($totalBills*$nonSatisfactoryBills/100))." out of ".$totalBills;?></span>)</p>
+      <div class="w3-grey">
+        <?php if($nonSatisfactoryBills==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $nonSatisfactoryBills;?>%"><?php echo $nonSatisfactoryBills;?>%</div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-red" style="width:<?php echo $nonSatisfactoryBills;?>%"><?php echo $nonSatisfactoryBills;?>%</div>
+        <?php endif;?>
+      </div>
+
+      <p>Approved Materials Bills (<span class="w3-text-red"><?php echo round(($totalBills*$approvedBills/100))." out of ".$totalBills;?></span>)</p>
+      <div class="w3-grey">
+        <?php if($approvedBills==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $approvedBills;?>%"><?php echo $approvedBills;?>% </div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-green" style="width:<?php echo $approvedBills;?>%"><?php echo $approvedBills;?>%</div>
+        <?php endif;?>
+      </div>
+
+      <p>Materials Bills Awaiting Approval (<span class="w3-text-red"><?php echo round(($totalBills*$awaitingBills/100))." out of ".$totalBills;?></span>)</p>
+      <div class="w3-grey">
+        <?php if($awaitingBills==0):?>
+          <div class="w3-container w3-center w3-padding" style="width:<?php echo $awaitingBills;?>%"><?php echo $awaitingBills;?>%</div>
+        <?php else:?>
+          <div class="w3-container w3-center w3-padding w3-orange" style="width:<?php echo $awaitingBills;?>%"><?php echo $awaitingBills;?>%</div>
         <?php endif;?>
       </div>
     </div>

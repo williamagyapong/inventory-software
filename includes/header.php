@@ -1,6 +1,6 @@
 
 <div class="w3-bar w3-top w3-card-4 w3-blue-grey w3-large" style="z-index:4">
-  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-right" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-right" onclick="w3_open();"><i class="fa fa-bars"></i>Menu</button>
   <span class="w3-bar-item w3-left" style="cursor: pointer;"><img src="images/logo2.png" width="65" height="30" class="logo"> <span class="w3-hide-small"><?php echo Config::get('app/name');?></span></span>
 </div>
 
@@ -33,8 +33,13 @@
        <?php endif;?>
       </div>
       </div>
-    <?php else:?>
+    <?php elseif(($admin->role == 'manager') && ($totalNotices==0)):?>
       <a href="#" class="w3-bar-item w3-button" title="Notifications"><i class="fa fa-bell w3-text-indigo"></i><span class="w3-badge w3-right w3-small w3-red"></span></a>
+    <!-- display storekeepers messages -->
+    <?php elseif(($admin->role == 'storekeeper') && ($totalMessages!=0)):?>
+      <a href="#" class="w3-bar-item w3-button" title="<?php echo $totalMessages;?> messages" onclick="showElement('storekeeper_msg_modal')"><i class="fa fa-envelope w3-text-indigo"></i><span class="w3-badge w3-right w3-small w3-red"><?php echo $totalMessages;?></span></a>
+    <?php elseif(($admin->role == 'storekeeper') && ($totalMessages==0)):?>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope w3-text-indigo"></i><span class="w3-badge w3-right w3-small w3-green">0</span></a>
      <?php endif;?> <!-- first condition tail-->
       <a href="settings.php" class="w3-bar-item w3-button" title="Settings"><i class="fa fa-cog w3-text-indigo"></i></a>
       <a href="logout.php" class="w3-bar-item w3-button" title="Exit"><i class="fa fa-sign-out w3-text-indigo"></i></a>

@@ -179,12 +179,26 @@ function updateProject(id, token, field='status') {
 * Set session variables for use
 */
 
- function setSession(token)
+ function setSession(token, value = 0)
+ {
+   $.post("action_page.php", {p_token:token, project_id:value}, function(data){
+      /*if(token=='print_project_session') {
+          
+      }*/
+      window.location = "show.php";
+   })
+ }
+
+ /*
+* Clear session variables from memory
+*/
+
+ function clearSession(token)
  {
    $.post("action_page.php", {p_token:token}, function(data){
-      if(token=='print_project_session') {
-          window.location = "show.php";
-      }
+      //success
+      console.log('session cleared')
+      
    })
  }
 
@@ -192,9 +206,13 @@ function updateProject(id, token, field='status') {
 /*
 * Populate sections of pages with content through ajax request
 */
- function loadElement(id, token)
+ function loadElement(id, token, value=0)
  {
-   $("#"+id).load("action_page.php?p_token="+token);
+   if(value==0) {
+      $("#"+id).load("action_page.php?p_token="+token+"&item_id="+value);
+   } else {
+      $("#"+id).load("action_page.php?p_token="+token+"&item_id="+value);
+   }
 
  }
 
@@ -298,7 +316,9 @@ function clearAlert(htmlElement)
     var duplicatedMat = 0;
  
     if(formElement['project_id'].value =='') {
-        alert("Please select a project");
+        //alert("Please select a project");
+        $('#alert_content').html('<b>Please select a project</b>');
+        showElement('alert-modal');
         return false;//don't allow submission
     }
 
@@ -325,7 +345,7 @@ function clearAlert(htmlElement)
     }
 
     //pass duplication of materials alert
-    console.log(formElement['project_id'].value)
+    //console.log(formElement['project_id'].value)
     if(duplicatedMat>0) {
        var alertBox = document.getElementById('alert');
         alertBox.innerHTML = '<b>Please remove duplicated materials!</b>';
@@ -418,7 +438,6 @@ function materialExist()
       var materialName = formElement['name_'+i];
       if(formElement['name_'+i].value !=='') {
         //make request to the database for checks and addition
-        console.log('something')
         return false;
         $.post("action_page.php", {p_token:'check_material', term:materialName.value}, function(res){
           console.log(materialName.value)
@@ -448,7 +467,7 @@ function materialExist()
       if((materialName !=='')&&(formElement['checked_'+i].checked==false)) {
         //make request to the database for checks and addition
         $.post("action_page.php", {p_token:'check_material', term:materialName}, function(res){
-          console.log(materialName)
+          
           if(res!=1) {
             var userRes = confirm('The material, '+ materialName + 'does not exist. Click OK to add it or cancel otherwise.');
             if(userRes) {
@@ -525,4 +544,16 @@ function materialExist()
      btn.innerHTML = '<b>Select All</b>'
    }
  }
+
+
+ $(document).ready(function(){
+    //extra rows for editing non satisfactory materials bill
+    /*$('#mat_edit_rows_btn').click(function(){
+      alert('clicked')
+        $('#more_material_fields').toggle();
+        //change button text
+        $(this).text('Hide Rows');
+    })*/
+
+ })
 

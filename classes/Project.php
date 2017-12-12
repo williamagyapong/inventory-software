@@ -22,7 +22,7 @@ class Project extends Model
 	}
 
     /**
-    * insert project details 
+    * insert project project 
     * @param void
     * @return boolean
     */
@@ -49,7 +49,7 @@ class Project extends Model
 
 
     /**
-    * change project details
+    * change project project
     * @param void
     * @return boolean
     */
@@ -110,27 +110,7 @@ class Project extends Model
 		return $this->_db->select("SELECT $ FROM {$this->table} WHERE `status`=1 AND `date_begun`<='{$currentDate}'ORDER BY `name` ASC LIMIT 5")->results();
 	}
 
-	/**
-	*fetch all projects with bill of required materials not prepared
-	*@param void
-	*@return projects | array
-	*/
-	public function getUnbilled()
-	{
-		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 'none' ORDER BY `name` ASC")->results();
-	}
-    
-
-	/**
-	*fetch all projects with approved bill of materials
-	*@param void
-	*@return projects | array
-	*/
-	public function getbilled()
-	{
-		return $this->_db->select("SELECT * FROM {$this->table} WHERE `status`=1 AND `bill_status` = 1 ORDER BY `name` ASC")->results();
-	}
-
+	
 
 	/**
     * determine project ratings
@@ -145,11 +125,11 @@ class Project extends Model
     	$nonApproved = $total - ($approved + $notSatisfied);
 
     	//convert to percentages
-    	$approved = ($approved/$total)*100;
-    	$notSatisfied = ($notSatisfied/$total)*100;
-    	$nonApproved = ($nonApproved/$total)*100;
+    	$approved = round(($approved/$total)*100, 2);
+    	$notSatisfied = round(($notSatisfied/$total)*100, 2);
+    	$nonApproved = round(($nonApproved/$total)*100, 2);
 
-    	return array($approved, $notSatisfied, $nonApproved);
+    	return array($total, $approved, $notSatisfied, $nonApproved);
     	
     }
 
@@ -188,6 +168,38 @@ class Project extends Model
 	   		}
 	   }
 	}
+
+
+	public function displayBillStatus($admin, $id = null)
+	{
+	   if($id)
+	   {
+	   		$project = $this->get($id);
+	   		switch ($project->bill_status) {
+	   			case '0':
+	   				return '<span class="w3-text-orange">Awaiting Approval</span>';
+	   				break;
+	   			case '1':
+	   				return '<span class="w3-text-blue">Approved</span>';
+	   				break;
+	   			case '2':
+	   			    if($admin=='storekeeper') {
+	   			    	return '<span class="w3-text-orange">Awaiting Approval</span>';
+	   			    } else {
+	   			    	return '<span class="w3-text-red">On Reminder</span>';
+	   			    }
+	   				
+	   				break;
+	   			case '3':
+	   				return '<span class="w3-text-red w3-bold">Not Satisfied</span>';
+	   				break;
+	   			default:
+	   				return '<span class="w3-text-black w3-bold">Not billed</span>';
+	   				break;
+	   		}
+	   }
+	}
+
 
 
 	/**
@@ -243,12 +255,13 @@ class Project extends Model
 	{
 		$projects = $this->_db->get($this->table, ['status', '=', 2])->results();
 		echo "
-	        <div id=\"remindedmodal\" style=\"position:absolute;margin-left:25px;margin-top:50px\">
-			    <div class=\"w3-modal-content w3-card w3-border w3-round\" style=\"max-width:690px;margin-top: 30px;\">
+	        <div id=\"remindedmodal\" style=\"position:absolute;margin-left:30px;margin-top:50px\">
+			    <div class=\"w3-modal-content w3-card w3-border w3-round\" style=\"margin-top: 30px;\">
 
 			      <div class=\"w3-center\"><br>
-			        <span onclick=\"hideElement('remindedmodal')\" class=\"w3-button w3-xxlarge w3-hover-red w3-display-topright\" title=\"Close\">&times;</span>
-			        <h3 class=\"w3-text-red\">Reminded Projects for Approval</h3>
+			        <span onclick=\"hideElement('remindedmodal')\" class=\"fa fa-times w3-button w3-xlarge w3-hover-red w3-display-topright\" title=\"Close\"></span>";
+			    echo (count($projects)==1)?"<span class=\"w3-text-red w3-large bold\">Reminded Project for Approval</span>":" <h3 class=\"w3-text-red w3-large bold\">Reminded Projects for Approval</h3>";
+			    echo "
 			      </div>
 
 			       <div class=\"w3-responsive\">
@@ -266,7 +279,7 @@ class Project extends Model
 				echo "<tr>
 				       <td>".$count."</td>
 				       <td>".$project->name."</td>
-				       <td><button onclick=\"openTab('div".$project->id."') \">View</button></td> 
+				       <td><button class=\"my-button\" onclick=\"openTab('div".$project->id."') \"><i class=\"fa fa-folder-open-o w3-text-orange\"></i> View</button></td> 
 				      </tr>
 				      
 	                     <div id=\"div$project->id\" class=\"tabs\" style=\"display:none;margin-bottom:20px;\">
@@ -334,6 +347,87 @@ class Project extends Model
 		          </div>
 		         ";
 	}
+
+
+
+	/**
+	*display projects marked as non-satisfactory for editing
+	*@param void
+	*@return html elements
+	*/
+
+	public function displayNonSatisfactoryProject($projectId)
+	{
+		$project = $this->get($projectId);
+		$projectManager = json_decode($project->project_manager);
+		$storesAdmin =  json_decode($project->stores_admin);
+		//print_array($storesAdmin);
+		
+			echo "
+                <form class=\"w3-container\" action=\"action_page.php\" method=\"post\">
+                  <input type=\"hidden\" name=\"project_id\" value=\" $project->id\">
+                  <div class=\"w3-section\">
+                   <fieldset class=\"w3-light-grey\">
+                    <div class=\"w3-half\">
+                      <label><b>Name of Project</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"name\" value=\"$project->name\" required=\"required\">
+                    </div>
+                    <div class=\"w3-half\">
+                      <label><b>Company In Charge of Project</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"company\" value=\"$project->company_in_charge\" required=\"required\">
+                    </div>
+                    <div class=\"w3-half\">
+                      <label><b>Location of Project</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"location\" value=\"$project->location\" required=\"required\">  
+                    </div>
+                    <div class=\"w3-half\">
+                      <label><b>Description of Project</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\"  name=\"description\" value=\"$project->description\" required=\"required\">
+                    </div>
+                    <div class=\"w3-half\">
+                      <label><b>Date of Commencement</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"date\" name=\"commencement_date\" value=\"$project->date_begun\" required=\"required\"> 
+                    </div>
+                    <div class=\"w3-half\">
+                      <label><b>Expected Date of Completion</b></label>
+                      <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"date\" name=\"completion_date\" value=\"$project->date_completion\" required=\"required\">
+                    </div>
+                    </fieldset>
+                    <fieldset class=\"w3-light-grey\">
+                      <legend class=\"w3-text-red\"><b>Project Manager</b></legend>
+                      <div class=\"w3-half\">
+                        <label><b>Name</b></label>
+                        <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"name_of_project_manager\" value=\"$projectManager->name\" required=\"required\">
+                      </div>
+                      <div class=\"w3-half\">
+                        <label><b>Phone</b></label>
+                        <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"project_manager_phone\" value=\"$projectManager->phone\" required=\"required\">
+                      </div>
+                    </fieldset>
+                    <fieldset class=\"w3-light-grey\">
+                      <legend class=\"w3-text-red\"><b>Stores Administrator</b></legend>
+                      <div class=\"w3-half\">
+                        <label><b>Name</b></label>
+                        <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"name_of_stores_admin\" value=\"$storesAdmin->name\" required=\"required\">
+                      </div>
+                      <div class=\"w3-half\">
+                        <label><b>Phone</b></label>
+                        <input class=\"w3-input w3-border w3-margin-bottom w3-blue-grey\" type=\"text\" name=\"stores_admin_phone\" value=\"$storesAdmin->phone\" required=\"required\">
+                      </div>
+                    </fieldset>
+                    <div class=\"w3-container w3-border-top w3-padding-16 w3-light-grey\">
+                      <div class=\"w3-right\">
+                        <button class=\"w3-button\" type=\"submit\" name=\"register\" value=\"update_project\"><b>Submit For Approval</b></button>
+                      </div>
+                   </div>
+                  </div>
+                </form>
+     ";
+		
+
+	}
+
+
 
 
 	

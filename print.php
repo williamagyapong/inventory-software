@@ -11,23 +11,23 @@
    Redirect::to('index.php');
  }
 
+
  $pObject = new Project();//instantiate project class
-//print_array($_SESSION);die();
+//print_array($_SESSION);
  if(Session::exist('PROJECT_ID')) {
     //handle printing of project details
     $project = DBHandler::getInstance()->get('projects', array('id', '=', Session::get('PROJECT_ID')))->first();
 
-    if(empty($project)) Redirect::to(502);
+    if(empty($project)) Redirect::to('dashboard.php');//stop printing
      $projectM = json_decode($project->project_manager);
      $storesAdmin = json_decode($project->stores_admin);
 
- } elseif(Session::exist('BILL_ID')){
-   
+ } elseif(Session::exist('PRINT_PROJECT_BILL')){
+      $billedProject = DBHandler::getInstance()->get('projects', array('id', '=', Session::get('PRINT_PROJECT_BILL')))->first();
+      $materialsBill = $pObject->getProjectMaterials(Session::get('PRINT_PROJECT_BILL'));
+      if(empty($materialsBill)) Redirect::to('dashboard.php');//stop printing
  } else {
-
-    $project = DBHandler::getInstance()->get('projects', array('status', '=', 0))->results();
-
-    if(empty($project)) Redirect::to(502);
+     Redirect::to(503); //exit the page and trigger operation failure error
  }
  
 ?>
@@ -52,12 +52,7 @@
  <!-- print button-->
   
   <div class="w3-row-padding w3-margin-bottom">
-  <?php 
-    if(Session::exist('BILL_ID')):
-      //handle printing of materials bill
-       $billedProject = DBHandler::getInstance()->get('projects', array('id', '=',Session::get('BILL_ID')))->first();
-       $materialsBill = $pObject->getProjectMaterials($billedProject->id);
-  ?>
+  <?php if(Session::exist('PRINT_PROJECT_BILL')): ?>
    <div id="bill-modal">
       <div class="w3-modal-content w3-border w3-round" style="max-width:690px;margin-top: 30px;">
         <div class="w3-center"><br>
@@ -171,6 +166,7 @@
 <script type="text/javascript" src="js/custom.js"></script>
 
 <script>
+  // Invoke the browser print action
   window.print();
 </script>
 </body>

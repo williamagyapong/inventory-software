@@ -6,19 +6,21 @@
  }
 
 $pObject = new Project();//instantiate project class
-
+//print_array($_GET);die();
 //control page content
- if(Input::exist('bill','get'))
+//print_array($_SESSION);
+ if(Session::exist('SHOW_PROJECT_BILL'))
  {
     //fetch materials bill details for executing SHOW and PRINT commands
     $billedProject = DBHandler::getInstance()->get('projects', array('bill_status','=',0))->first();
-    if(empty($billedProject)) Redirect::to(502);//trigger error
+    if(empty($billedProject)) Redirect::to(503);//trigger error
     $materialsBill = $pObject->getProjectMaterials($billedProject->id);
+    //print_array($materialsBill);
  }
  else{
       //fetch projects for executing SHOW command
       $project = DBHandler::getInstance()->get('projects', array('status', '=', 0))->first();
-      if(empty($project)) Redirect::to(502);//trigger error
+      if(empty($project)) Redirect::to(503);//trigger error
      $projectM = json_decode($project->project_manager);
      $storesAdmin = json_decode($project->stores_admin);
  }
@@ -60,16 +62,17 @@ $pObject = new Project();//instantiate project class
   <?php require_once'includes/pop_ups.php';?>
 
   <div class="w3-row-padding w3-margin-bottom">
-  <?php if(Input::exist('bill','get')):?>
+  <?php if(Session::exist('SHOW_PROJECT_BILL')):?>
        <!-- modal for bill confirmation -->
     <div id="bill-modal">
-      <div class="w3-modal-content w3-border w3-round" style="max-width:690px;margin-top: 30px;">
+      <div class="w3-modal-content w3-border w3-round" style="margin-top: 30px;">
         <div class="w3-center"><br>
-           <h3 class="w3-text-red">Bill of Required Materials</h3>
+           <span class="w3-text-red w3-large">Bill of Required Materials</span><span class="w3-display-topright">Date Prepared: <?php echo $materialsBill[0]->date_prepared;?>&nbsp;&nbsp;&nbsp;</span>
         </div>
 
         <form class="w3-container" action="action_page.php" method="post">
-          <input type="hidden" name="projectId" value="<?php echo $billedProject->id;?>">
+          <input type="hidden" name="project_id" value="<?php echo $billedProject->id;?>"><!-- for approval only-->
+          <input type="hidden" name="print_bill_project_id" value="<?php echo $billedProject->id;?>">
           <fieldset>
             <legend class="w3-text-red"><b>Name of Project</b></legend>
             <div class="w3-input w3-border w3-margin-bottom w3-light-grey">
@@ -101,16 +104,15 @@ $pObject = new Project();//instantiate project class
           </fieldset> 
           <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
             <div class="w3-right">
-            <?php if(Input::exist('print','get')):?>
-              <input type="hidden" name="field_name" value="bill_status">
-              <a href="print.php" target="_blank" class="w3-button  w3-indigo w3-section w3-padding"><b>Satisfied</b></a>
+            <?php if(Session::exist('PRINT_PROJECT_BILL')):?>
+              <a href="#" id="print_bill_btn" class="my-button w3-button" title="Append approval to print bill"><b>Satisfied</b></a>
             <?php else:?>
               <input type="hidden" name="field_name" value="bill_status">
-              <button class="w3-button  w3-indigo w3-section w3-padding" type="submit" name="p_token" value="satisfied"><b>Satisfied</b></button>
+              <button class="w3-button" type="submit" name="p_token" value="satisfied"><b>Satisfied</b></button>
             <?php endif;?>
 
               <?php echo "
-              <span  onclick=\"showElement('notsatisfied-bill-modal','".$billedProject->id."')\" class=\"w3-button  w3-indigo w3-section w3-padding\"><b>Not Satisfied</b></span>";
+              <span  onclick=\"showElement('notsatisfied-bill-modal','".$billedProject->id."')\" class=\"my-button w3-button\"><b>Not Satisfied</b></span>";
               ?>
             </div>
           </div>
@@ -120,13 +122,14 @@ $pObject = new Project();//instantiate project class
   <?php else:?>
      <!-- modal for project confirmation -->
     <div id="modal">
-      <div class="w3-modal-content w3-border w3-round" style="max-width:690px;margin-top: 30px;">
+      <div class="w3-modal-content w3-border w3-round" style="margin-top: 30px;">
         <div class="w3-center"><br>
-           <h3 class="w3-text-red">Project Registration Details</h3>
+           <h3 class="w3-text-red">Project Registration Details For Approval <?php echo (Session::exist('PRINT_PROJECT'))?'And Printing':'';?></h3>
         </div>
 
-        <form class="w3-container" action="action_page.php" method="post">
-          <input type="hidden" name="projectId" value="<?php echo $project->id;?>">
+        <form id="print_form" class="w3-container" action="action_page.php" method="post">
+          <input type="hidden" name="project_id" value="<?php echo $project->id;?>">
+          <input type="hidden" name="print_project_id" value="<?php echo $project->id;?>">
           <div class="w3-section">
            <fieldset class="w3-light-grey">
             <div class="w3-half">
@@ -180,14 +183,14 @@ $pObject = new Project();//instantiate project class
               <div class="w3-right">
               <?php if(Session::exist('PRINT_PROJECT')):?>
                 <input type="hidden" name="field_name" value="status">
-                <button class="w3-button  w3-indigo w3-section w3-padding" type="submit" name="p_token" value="print"><b>Satisfied</b></button>
+                <span id="print_btn" class="my-button w3-button" title="click to append approval and print"><b>Satisfied</b></span>
               <?php else:?>
                 <input type="hidden" name="field_name" value="status">
-                <button class="w3-button  w3-indigo w3-section w3-padding" type="submit" name="p_token" value="satisfied"><b>Satisfied</b></button>
+                <button class="w3-button" type="submit" name="p_token" value="satisfied"><b>Satisfied</b></button>
               <?php endif;?>
 
                 <?php echo "
-                <span  onclick=\"showElement('notsatisfied-modal','".$project->id."')\" class=\"w3-button  w3-indigo w3-section w3-padding\"><b>Not Satisfied</b></span>";
+                <span  onclick=\"showElement('notsatisfied-modal','".$project->id."')\" class=\"my-button w3-button\"><b>Not Satisfied</b></span>";
                 ?>
               </div>
             </div>
@@ -203,7 +206,7 @@ $pObject = new Project();//instantiate project class
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-dark-grey">
     
-    <p>Powered by <a href="#" target="_blank"><?php echo Config::get('client/name');?></a></p>
+    <p>Powered by <a href="#" target="_blank"><?php echo Config::get('developer/name');?></a></p>
   </footer>
 
   <!-- End page content -->
@@ -213,28 +216,29 @@ $pObject = new Project();//instantiate project class
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script>
-// Get the Sidebar
-var mySidebar = document.getElementById("mySidebar");
+  // create a new window to handle project printing
+  var winProps = 'width=600, height=600, resizable=yes, scrollbars=yes';
+  $('#print_btn').click(function(){
+    var projectId = $('input[name="print_project_id"]').val();
+    $.post("action_page.php", {p_token:'print', project_id:projectId, field_name:'status'}, function(response){
 
-// Get the DIV with overlay effect
-var overlayBg = document.getElementById("myOverlay");
+    })
+    //open print window
+    var printWin = open('print.php', 'printWin', winProps);
+    window.location = "dashboard.php?pp=done";//redirect to the home page
+    //printWin.close(); //dismiss the print window after printing the document
+  })
+  //handle material bill printing
+  $('#print_bill_btn').click(function(){
+    var projectId = $('input[name="print_bill_project_id"]').val();
+    $.post("action_page.php", {p_token:'print', project_id:projectId, field_name:'bill_status'}, function(response){
 
-// Toggle between showing and hiding the sidebar, and add overlay effect
-function w3_open() {
-    if (mySidebar.style.display === 'block') {
-        mySidebar.style.display = 'none';
-        overlayBg.style.display = "none";
-    } else {
-        mySidebar.style.display = 'block';
-        overlayBg.style.display = "block";
-    }
-}
-
-// Close the sidebar with the close button
-function w3_close() {
-    mySidebar.style.display = "none";
-    overlayBg.style.display = "none";
-}
+    })
+    //open print window
+    var printWin = open('print.php', 'printWin', winProps);
+    window.location = "dashboard.php?pb=done";//redirect to the home page
+    //printWin.close(); //dismiss the print window after printing the document
+  })
 </script>
 
 </body>

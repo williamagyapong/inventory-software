@@ -43,6 +43,17 @@ class Notification
 	}
 
 
+	/**
+	*@param
+	*@var 
+    */
+    public static function getStorekeeperMsg()
+    {
+    	$sql = "SELECT * FROM projects WHERE status = 3 OR bill_status = 3";
+    	return self::getDB()->select($sql)->results();
+    }
+
+
 	public static function counter()
 	{
 		
